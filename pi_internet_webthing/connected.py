@@ -1,6 +1,7 @@
 import requests
 import threading
 import time
+import logging
 from datetime import datetime, timedelta
 from dataclasses import dataclass
 
@@ -33,20 +34,25 @@ class ConnectedRunner:
                 connected_info = self.__measure(test_server)
                 listener(connected_info)
             except Exception as e:
-                pass
+                logging.error(e)
             time.sleep(measure_period_sec)
 
     def __measure(self, test_uri) -> ConnectionInfo:
         try:
            requests.get(test_uri)
-           return ConnectionInfo(datetime.now(), True, self.get_internet_address(60))
+           return ConnectionInfo(datetime.now(), True, self.__get_internet_address(60))
         except:
+            self.__invalidate_cache()
             return ConnectionInfo(datetime.now(), False, "")
 
-    def get_internet_address(self, max_cache_ttl):
+    def __invalidate_cache(self):
+        self.cache_ip_address = ""
+        self.cache_time = datetime.fromtimestamp(555)
+
+    def __get_internet_address(self, max_cache_ttl: int = 60):
         try:
             now = datetime.now()
-            if (now - self.cache_time).seconds > 60:
+            if (now - self.cache_time).seconds > max_cache_ttl:
                 response = requests.get('http://whatismyip.akamai.com/')
                 self.cache_ip_address = response.text
                 self.cache_time = now

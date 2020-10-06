@@ -1,6 +1,7 @@
 from speedtest import Speedtest
 import threading
 import time
+import logging
 from dataclasses import dataclass
 
 
@@ -24,7 +25,7 @@ class SpeedtestRunner:
                 speed = self.__measure()
                 listener(speed)
             except Exception as e:
-                pass
+                logging.error(e)
             time.sleep(measure_period_sec)
 
     def __measure(self) -> Speed:
@@ -35,6 +36,5 @@ class SpeedtestRunner:
             link = s.results.share()   # POST data to the speedtest.net API to obtain a share results link
         except:
             link = None
-            pass
         metrics = s.results.dict()
         return Speed(metrics['server'].get('sponsor', '') + "/" + metrics['server'].get('name', ''), int(metrics['download']), int(metrics['upload']), metrics['ping'], link)

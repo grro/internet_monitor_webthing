@@ -14,7 +14,7 @@ class ConnetionHistory:
         self.updated_listener = updated_listener
 
     def on_connection_info_fetched(self, connection_info: ConnectionInfo):
-        if len(self.history_log) > 0 and self.history_log[len(self.history_log)] == connection_info:
+        if len(self.history_log) > 0 and self.history_log[len(self.history_log) -1] == connection_info:
             return
         if len(self.history_log) > 50:
             del self.history_log[0]
@@ -176,7 +176,7 @@ class InternetWebthing(Thing):
         self.connection_history.notify_of_external_update("\n".join(history))
 
     def __to_mbit(self, bit_pre_sec: int):
-        return round(bit_pre_sec / (1000 * 1000), 2)
+        return round(bit_pre_sec / (1000 * 1000), 1)
 
 def run_server(port, description, speedtest_period, connecttest_period):
     speedtest_webthing = InternetWebthing(description, speedtest_period, connecttest_period)
