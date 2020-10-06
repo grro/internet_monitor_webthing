@@ -31,7 +31,7 @@ class InternetWebthing(Thing):
         Thing.__init__(
             self,
             'urn:dev:ops:speedtest-1',
-            'InternetspeedSensor',
+            'Internet Info',
             ['MultiLevelSensor'],
             description
         )
@@ -49,7 +49,7 @@ class InternetWebthing(Thing):
                          'title': 'Internet downloadspeed',
                          'type': 'number',
                          'description': 'The current internet download  speed',
-                         'unit': 'bits/sec',
+                         'unit': 'Mbit/sec',
                          'readOnly': True,
                      }))
 
@@ -63,7 +63,7 @@ class InternetWebthing(Thing):
                          'title': 'Internet uploadspeed',
                          'type': 'number',
                          'description': 'The current internet upload speed',
-                         'unit': 'bits/sec',
+                         'unit': 'Mbit/sec',
                          'readOnly': True,
                      }))
 
@@ -154,8 +154,8 @@ class InternetWebthing(Thing):
         self.ioloop.add_callback(self.__update_speed_props, speed)
 
     def __update_speed_props(self, speed: Speed):
-        self.uploadspeed.notify_of_external_update(speed.uploadspeed)
-        self.downloadspeed.notify_of_external_update(speed.downloadspeed)
+        self.uploadspeed.notify_of_external_update(self.__to_mbit(speed.uploadspeed))
+        self.downloadspeed.notify_of_external_update(self.__to_mbit(speed.downloadspeed))
         self.ping_time.notify_of_external_update(speed.ping)
         self.testserver.notify_of_external_update(speed.server)
         self.resulturi.notify_of_external_update(speed.report_uri)
@@ -175,6 +175,8 @@ class InternetWebthing(Thing):
         history = [str(info) for info in connetion_history]
         self.connection_history.notify_of_external_update("\n".join(history))
 
+    def __to_mbit(self, bit_pre_sec: int):
+        return round(bit_pre_sec / (1000 * 1000), 2)
 
 def run_server(port, description, speedtest_period, connecttest_period):
     speedtest_webthing = InternetWebthing(description, speedtest_period, connecttest_period)
