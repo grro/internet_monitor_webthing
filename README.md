@@ -1,2 +1,2 @@
-# pi_speedtest_webthing
-A web connected local speedtest service running on Raspberry Pi
+# pi_internet_webthing
+A web connected local internet info agent running on Raspberry Pi
