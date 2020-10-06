@@ -25,7 +25,7 @@ setup(
     license='MIT',
     author='Gregor Roth',
     author_email='gregor.roth@web.de',
-    url='https://github.com/grro/pi_speedtest_webthing',
+    url='https://github.com/grro/pi_internet_webthing',
     entry_points={
         'console_scripts': [
             ENTRY_POINT + '=' + PACKAGENAME + ':main'
