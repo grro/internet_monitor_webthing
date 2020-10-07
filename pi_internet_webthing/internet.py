@@ -68,6 +68,8 @@ class InternetWebthing(Thing):
                          'type': 'number',
                          'description': 'The current internet download  speed',
                          'unit': 'Mbit/sec',
+                         'minimum': 0,
+                         'maximum': 10000,
                          'readOnly': True,
                      }))
 
@@ -82,6 +84,8 @@ class InternetWebthing(Thing):
                          'type': 'number',
                          'description': 'The current internet upload speed',
                          'unit': 'Mbit/sec',
+                         'minimum': 0,
+                         'maximum': 10000,
                          'readOnly': True,
                      }))
 
@@ -96,6 +100,8 @@ class InternetWebthing(Thing):
                          'type': 'number',
                          'description': 'The current internet ping latency',
                          'unit': 'milliseconds',
+                         'minimum': 0,
+                         'maximum': 1000,
                          'readOnly': True,
                      }))
 
