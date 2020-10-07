@@ -3,15 +3,33 @@ from webthing import (SingleThing, Property, Thing, Value, WebThingServer)
 from pi_internet_webthing.speedtestrunner import SpeedtestRunner, Speed
 from pi_internet_webthing.connected import ConnectedRunner, ConnectionInfo
 import logging
+import pickle
 import tornado.ioloop
 
 
 
 class ConnetionHistory:
+    FILENAME = "history.p"
 
     def __init__(self, updated_listener):
-        self.history_log = []
         self.updated_listener = updated_listener
+        self.history_log = self.__load()
+
+    def __load(self):
+        try:
+            with open(self.FILENAME, "rb") as file:
+                data = pickle.load(file)
+                return data
+        except Exception as e:
+            logging.error(e)
+            return []
+
+    def __store(self):
+        try:
+            with open(self.FILENAME, "wb") as file:
+                pickle.dump(self.history_log, file)
+        except Exception as e:
+            logging.error(e)
 
     def on_connection_info_fetched(self, connection_info: ConnectionInfo):
         if len(self.history_log) > 0 and self.history_log[len(self.history_log) -1] == connection_info:
@@ -20,7 +38,7 @@ class ConnetionHistory:
             del self.history_log[0]
         self.history_log.append(connection_info)
         self.updated_listener(self.history_log)
-
+        self.__store()
 
 class InternetWebthing(Thing):
 
@@ -133,7 +151,7 @@ class InternetWebthing(Thing):
                          'readOnly': True,
                      }))
 
-        self.connection_history = Value("")
+        self.connection_history = Value([str(info) for info in self.history.history_log])
         self.add_property(
             Property(self,
                      'connection_history',
@@ -141,7 +159,7 @@ class InternetWebthing(Thing):
                      metadata={
                          '@type': 'List',
                          'title': 'The connection history',
-                         'type': 'string',
+                         'type': 'list',
                          'description': 'The connection history',
                          'readOnly': True,
                      }))
@@ -173,7 +191,7 @@ class InternetWebthing(Thing):
 
     def __update_connection_history_prop(self, connetion_history: List[ConnectionInfo]):
         history = [str(info) for info in connetion_history]
-        self.connection_history.notify_of_external_update("\n".join(history))
+        self.connection_history.notify_of_external_update(history)
 
     def __to_mbit(self, bit_pre_sec: int):
         return round(bit_pre_sec / (1000 * 1000), 1)

@@ -129,3 +129,4 @@ dmypy.json
 .pyre/
 /.idea
 /pi_internet_webthing.iml
+/pi_internet_webthing/history.p

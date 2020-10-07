@@ -18,10 +18,10 @@ def main():
     args = parser.parse_args()
 
     if args.command == 'listen':
-        print("running " + PACKAGENAME + " on port " + str(args.port))
+        print("running " + PACKAGENAME + " on port " + str(args.port) + " with speedtest_period " + str(args.speedtest_period) + "sec and connecttest_period " + str(args.connecttest_period) + "sec")
         run_server(int(args.port), DESCRIPTION, args.speedtest_period, args.connecttest_period)
     elif args.command == 'register':
-        print("register " + PACKAGENAME + " on port " + str(args.port))
+        print("register " + PACKAGENAME + " on port " + str(args.port) + " with speedtest_period " + str(args.speedtest_period) + "sec and connecttest_period " + str(args.connecttest_period) + "sec")
         register(PACKAGENAME, ENTRY_POINT, int(args.port), args.speedtest_period, args.connecttest_period)
     elif args.command == 'deregister':
         deregister(PACKAGENAME, int(args.port))
@@ -33,6 +33,6 @@ def main():
 
 if __name__ == '__main__':
     log_level = os.environ.get("LOGLEVEL", "INFO")
-    logging.basicConfig(format='%(asctime)s %(name)-20s: %(levelname)-8s %(message)s', level=log_level, datefmt='%Y-%m-%d %H:%M:%S')
+    logging.basicConfig(format='%(asctime)s %(name)-20s: %(levelname)-8s %(message)s', level=logging.getLevelName(log_level), datefmt='%Y-%m-%d %H:%M:%S')
     main()
 
