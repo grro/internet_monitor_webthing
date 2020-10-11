@@ -57,20 +57,6 @@ class InternetSpeedMonitorWebthing(Thing):
             description
         )
 
-        self.testperiod = Value(speedtest_period)
-        self.add_property(
-            Property(self,
-                     'test_period',
-                     self.testperiod,
-                     metadata={
-                         '@type': 'LevelProperty',
-                         'title': 'speedtest execution period',
-                         'type': 'number',
-                         'description': 'The speedtest execution period',
-                         'unit': 'sec',
-                         'readOnly': True,
-                     }))
-
         self.downloadspeed = Value(0)
         self.add_property(
             Property(self,
@@ -110,6 +96,20 @@ class InternetSpeedMonitorWebthing(Thing):
                          'type': 'number',
                          'description': 'The current internet ping latency',
                          'unit': 'milliseconds',
+                         'readOnly': True,
+                     }))
+
+        self.testperiod = Value(speedtest_period)
+        self.add_property(
+            Property(self,
+                     'test_period',
+                     self.testperiod,
+                     metadata={
+                         '@type': 'LevelProperty',
+                         'title': 'speedtest execution period',
+                         'type': 'number',
+                         'description': 'The speedtest execution period',
+                         'unit': 'sec',
                          'readOnly': True,
                      }))
 

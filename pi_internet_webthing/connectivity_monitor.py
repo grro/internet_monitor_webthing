@@ -114,6 +114,19 @@ class InternetConnectivityMonitorWebthing(Thing):
         self.history = ConnetionHistory(self.__on_connection_history_updated)
         self.connecttest_period = connecttest_period
 
+        self.internet_connected = Value(False)
+        self.add_property(
+            Property(self,
+                     'connected',
+                     self.internet_connected,
+                     metadata={
+                         '@type': 'BooleanProperty',
+                         'title': 'Internet connected',
+                         "type": "boolean",
+                         'description': 'Whether the internet is connected',
+                         'readOnly': True,
+                     }))
+
         self.test_url = Value(connecttest_url)
         self.add_property(
             Property(self,
@@ -138,19 +151,6 @@ class InternetConnectivityMonitorWebthing(Thing):
                          'type': 'number',
                          'description': 'The connecttest execution period',
                          'unit': 'sec',
-                         'readOnly': True,
-                     }))
-
-        self.internet_connected = Value(False)
-        self.add_property(
-            Property(self,
-                     'connected',
-                     self.internet_connected,
-                     metadata={
-                         '@type': 'BooleanProperty',
-                         'title': 'Internet connected',
-                         "type": "boolean",
-                         'description': 'Whether the internet is connected',
                          'readOnly': True,
                      }))
 

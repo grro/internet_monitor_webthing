@@ -48,3 +48,8 @@ By doing this the webthing service will be started automatically on boot. Starti
 ```
 sudo netmonitor --command register --port 8433 --speedtest_period 900 --connecttest_period 5 
 ```  
+
+To start the speedtest monitor only just omit the --connecttest_period parameter
+```
+sudo netmonitor --command listen --port 8433 --speedtest_period 900
+```
