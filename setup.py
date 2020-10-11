@@ -2,8 +2,8 @@ from setuptools import setup
 from os import path
 
 PACKAGENAME = 'pi_internet_webthing'
-ENTRY_POINT = "internet"
-DESCRIPTION = "A web connected local internet info agent running on Raspberry Pi"
+ENTRY_POINT = "netmonitor"
+DESCRIPTION = "A web connected local internet speed and connectivity monitor"
 
 
 this_directory = path.abspath(path.dirname(__file__))
