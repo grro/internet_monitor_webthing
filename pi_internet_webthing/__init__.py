@@ -35,12 +35,12 @@ def main():
 
     if args.command is None:
         print_info()
-    elif args.command == 'listen' and (args.speedtest_period != 0 or args.connecttest_period != 0):
+    elif args.command == 'listen' and (args.speedtest_period > 0 or args.connecttest_period > 0):
         if args.port is None:
             print("--port is mandatory")
         else:
             run_server(int(args.port), DESCRIPTION, args.speedtest_period, args.connecttest_period, args.connecttest_url)
-    elif args.command == 'register' and (args.speedtest_period != 0 or args.connecttest_period != 0):
+    elif args.command == 'register' and (args.speedtest_period > 0 or args.connecttest_period > 0):
         if args.port is None:
             print("--port is mandatory")
         else:
