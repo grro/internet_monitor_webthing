@@ -36,23 +36,31 @@ def main():
     if args.command is None:
         print_info()
     elif args.command == 'listen' and (args.speedtest_period > 0 or args.connecttest_period > 0):
-        if args.port is None:
+        if args.hostname is None:
+            print("--hostname is mandatory")
+        elif args.port is None:
             print("--port is mandatory")
         else:
-            run_server(int(args.port), DESCRIPTION, args.speedtest_period, args.connecttest_period, args.connecttest_url)
+            run_server(args.hostname, int(args.port), DESCRIPTION, args.speedtest_period, args.connecttest_period, args.connecttest_url)
     elif args.command == 'register' and (args.speedtest_period > 0 or args.connecttest_period > 0):
-        if args.port is None:
+        if args.hostname is None:
+            print("--hostname is mandatory")
+        elif args.port is None:
             print("--port is mandatory")
         else:
             print("register " + PACKAGENAME + " on port " + str(args.port) + " with speedtest_period " + str(args.speedtest_period) + "sec and connecttest_period " + str(args.connecttest_period) + "sec")
-            register(PACKAGENAME, ENTRY_POINT, int(args.port), args.speedtest_period, args.connecttest_period)
+            register(PACKAGENAME, ENTRY_POINT, args.hostname, int(args.port), args.speedtest_period, args.connecttest_period)
     elif args.command == 'deregister':
-        if args.port is None:
+        if args.hostname is None:
+            print("--hostname is mandatory")
+        elif args.port is None:
             print("--port is mandatory")
         else:
             deregister(PACKAGENAME, int(args.port))
     elif args.command == 'log':
-        if args.port is None:
+        if args.hostname is None:
+            print("--hostname is mandatory")
+        elif args.port is None:
             print("--port is mandatory")
         else:
             printlog(PACKAGENAME, int(args.port))

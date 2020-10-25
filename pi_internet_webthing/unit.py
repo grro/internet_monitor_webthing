@@ -12,7 +12,7 @@ After=syslog.target
 
 [Service]
 Type=simple
-ExecStart=$entrypoint --command listen --port $port --speedtest_period $speedtest_period --connecttest_period $connecttest_period
+ExecStart=$entrypoint --command listen --hostname $hostname --port $port --speedtest_period $speedtest_period --connecttest_period $connecttest_period
 SyslogIdentifier=$packagename
 StandardOutput=syslog
 StandardError=syslog
@@ -24,8 +24,8 @@ WantedBy=multi-user.target
 ''')
 
 
-def register(packagename, entrypoint, port, speedtest_period, connecttest_period):
-    unit = UNIT_TEMPLATE.substitute(packagename=packagename, entrypoint=entrypoint, port=port, speedtest_period=speedtest_period, connecttest_period=connecttest_period)
+def register(packagename: str, entrypoint: str, hostname: str, port: int, speedtest_period: int, connecttest_period:int):
+    unit = UNIT_TEMPLATE.substitute(packagename=packagename, entrypoint=entrypoint, hostname=hostname, port=port, speedtest_period=speedtest_period, connecttest_period=connecttest_period)
     service = packagename + "_" + str(port) + ".service"
     unit_file_fullname = str(pathlib.Path("/", "etc", "systemd", "system", service))
     with open(unit_file_fullname, "w") as file:

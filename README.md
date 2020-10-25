@@ -38,15 +38,15 @@ sudo pip install pi_internet_webthing
 
 After this installation you may start the webthing http endpoint inside your python code or via command line using
 ```
-sudo netmonitor --command listen --port 8433 --speedtest_period 900 --connecttest_period 5 
+sudo netmonitor --command listen --hostname 192.168.0.23 --port 8433 --speedtest_period 900 --connecttest_period 5 
 ```
-Here, the webthing API will be bind to the local port 8433. The internet speed montior as well as the connectivity monitor will be started.
+Here, the webthing API will be bind to the hostname 192.168.0.23 with local port 8433. The internet speed montior as well as the connectivity monitor will be started.
 The speed test will be executed each 15 min (900 sec), the connectivity test will be executed each 5 sec.  
 
 Alternatively to the *listen* command, you can use the *register* command to register and start the webthing service as systemd unit. 
 By doing this the webthing service will be started automatically on boot. Starting the server manually using the *listen* command is no longer necessary. 
 ```
-sudo netmonitor --command register --port 8433 --speedtest_period 900 --connecttest_period 5 
+sudo netmonitor --command register --hostname 192.168.0.23 --port 8433 --speedtest_period 900 --connecttest_period 5 
 ```  
 
 To start the speedtest monitor only just omit the --connecttest_period parameter
