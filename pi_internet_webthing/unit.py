@@ -26,7 +26,7 @@ WantedBy=multi-user.target
 
 def register(packagename: str, entrypoint: str, hostname: str, port: int, speedtest_period: int, connecttest_period:int):
     unit = UNIT_TEMPLATE.substitute(packagename=packagename, entrypoint=entrypoint, hostname=hostname, port=port, speedtest_period=speedtest_period, connecttest_period=connecttest_period)
-    service = packagename + "_" + str(port) + ".service"
+    service = packagename + "_" + hostname.encode("ascii").hex() + "_" + str(port) + ".service"
     unit_file_fullname = str(pathlib.Path("/", "etc", "systemd", "system", service))
     with open(unit_file_fullname, "w") as file:
         file.write(unit)
@@ -36,10 +36,10 @@ def register(packagename: str, entrypoint: str, hostname: str, port: int, speedt
     system("sudo systemctl status " + service)
 
 
-def deregister(packagename, port):
+def deregister(packagename, hostname: str, port):
     print("deregister " + packagename + " on port " + str(port))
 
-    service = packagename + "_" + str(port) + ".service"
+    service = packagename + "_" + hostname.encode("ascii").hex() + "_" + str(port) + ".service"
     unit_file_fullname = str(pathlib.Path("/", "etc", "systemd", "system", service))
     system("sudo systemctl stop " + service)
     system("sudo systemctl disable " + service)
@@ -59,8 +59,10 @@ def list_installed(packagename: str):
     try:
         for file in listdir(pathlib.Path("/", "etc", "systemd", "system")):
             if file.startswith(packagename) and file.endswith('.service'):
-                port = file[file.rindex('_')+1:file.index('.service')]
-                services.append((file, port, is_active(file)))
+                idx = file.rindex('_')
+                port = file[idx+1:file.index('.service')]
+                host = bytearray.fromhex(file[file[:idx].rindex('_')+1:idx]).decode()
+                services.append((file, host, port, is_active(file)))
     except Exception as e:
         pass
     return services
@@ -75,4 +77,5 @@ def is_active(serivcename: str):
             if '(running)' in line:
                 return True
     return False
+
 
