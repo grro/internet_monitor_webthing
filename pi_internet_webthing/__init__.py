@@ -60,7 +60,7 @@ def main():
             print("--port is mandatory")
         else:
             print("register " + PACKAGENAME + " on port " + str(args.port) + " with speedtest_period " + str(args.speedtest_period) + "sec and connecttest_period " + str(args.connecttest_period) + "sec")
-            register(PACKAGENAME, ENTRY_POINT, args.hostname, int(args.port), args.speedtest_period, args.connecttest_period)
+            register(PACKAGENAME, ENTRY_POINT, args.hostname, int(args.port), bool(args.verbose), args.speedtest_period, args.connecttest_period)
     elif args.command == 'deregister':
         if args.hostname is None:
             print("--hostname is mandatory")
