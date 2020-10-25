@@ -28,6 +28,7 @@ def main():
     parser = argparse.ArgumentParser(description=DESCRIPTION)
     parser.add_argument('--command', metavar='command', required=False, type=str, help='the command. Supported commands are: listen (run the webthing service), register (register and starts the webthing service as a systemd unit, deregister (deregisters the systemd unit), log (prints the log)')
     parser.add_argument('--port', metavar='port', required=False, type=int, help='the port of the webthing serivce')
+    parser.add_argument('--hostname', metavar='hostname', required=False, type=str, help='the hostname of the webthing serivce')
     parser.add_argument('--speedtest_period', metavar='speedtest_period', required=False, type=int, default=0, help='the speedtest period in sec')
     parser.add_argument('--connecttest_period', metavar='connecttest_period', required=False, type=int, default=0, help='the connecttest period in sec')
     parser.add_argument('--connecttest_url', metavar='connecttest_url', required=False, type=str, default="http://google.com", help='the url to connect runnig the connect test')
