@@ -52,7 +52,7 @@ class InternetSpeedMonitorWebthing(Thing):
         Thing.__init__(
             self,
             'urn:dev:ops:speedmonitor-1',
-            'Speed-Monitor',
+            'Internet Speed Monitor',
             ['MultiLevelSensor'],
             description
         )

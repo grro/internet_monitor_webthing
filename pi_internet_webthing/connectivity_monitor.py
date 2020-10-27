@@ -107,7 +107,7 @@ class InternetConnectivityMonitorWebthing(Thing):
         Thing.__init__(
             self,
             'urn:dev:ops:connectivitymonitor-1',
-            'Connectivity-Monitor',
+            'Internet Connectivity Monitor',
             ['MultiLevelSensor'],
             description
         )
