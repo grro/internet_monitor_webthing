@@ -39,11 +39,11 @@ class InternetApp(App):
 
     def do_process_command(self, command:str, hostname: str, port: int, verbose: bool, args):
         if command == 'listen' and (args.speedtest_period > 0 or args.connecttest_period > 0):
-            run_server(hostname, port, self.desription, args.speedtest_period, args.connecttest_period, args.connecttest_url)
+            run_server(hostname, port, self.description, args.speedtest_period, args.connecttest_period, args.connecttest_url)
         elif args.command == 'register' and (args.speedtest_period > 0 or args.connecttest_period > 0):
             print("register " + self.packagename + " on port " + str(args.port) + " with speedtest_period " + str(args.speedtest_period) + "sec and connecttest_period " + str(args.connecttest_period) + "sec")
             unit = UNIT_TEMPLATE.substitute(packagename=self.packagename, entrypoint=self.entrypoint, hostname=hostname, port=port, verbose=verbose, speedtest_period=args.speedtest_period, connecttest_period=args.connecttest_period, connecttest_url=args.connecttest_url)
-            self.unit.register(hostname, port, args.speedtest_period, unit)
+            self.unit.register(hostname, port, unit)
 
 
 def main():
