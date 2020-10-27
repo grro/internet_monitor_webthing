@@ -1,5 +1,6 @@
 from os import system, remove
 from os import listdir
+from abc import ABC, abstractmethod
 import pathlib
 import logging
 import subprocess
@@ -7,13 +8,13 @@ import argparse
 
 
 
-class App:
+class App(ABC):
 
     def __init__(self, packagename: str, entrypoint: str, description: str):
         self.unit = Unit(packagename)
         self.packagename = packagename
         self.entrypoint = entrypoint
-        self.desription = description
+        self.description = description
 
     def do_add_argument(self, parser):
         pass
@@ -24,8 +25,11 @@ class App:
     def do_additional_listen_example_params(self):
         return ""
 
-    def print_info(self):
-        print("usage " + self.entrypoint + " --help for command options")
+    def print_usage_info(self, msg: str=None):
+        if msg is not None:
+            print(msg + "\n")
+        print("for command options usage")
+        print(" sudo " + self.entrypoint + " --help")
         print("example commands")
         print(" sudo " + self.entrypoint + " --command register --hostname 192.168.0.23 --port 9496 " + self.do_additional_listen_example_params())
         print(" sudo " + self.entrypoint + " --command listen --hostname 192.168.0.23 --port 9496 " + self.do_additional_listen_example_params())
@@ -41,7 +45,7 @@ class App:
 
 
     def handle_command(self):
-        parser = argparse.ArgumentParser(description=self.desription)
+        parser = argparse.ArgumentParser(description=self.description)
         parser.add_argument('--command', metavar='command', required=False, type=str, help='the command. Supported commands are: listen (run the webthing service), register (register and starts the webthing service as a systemd unit, deregister (deregisters the systemd unit), log (prints the log)')
         parser.add_argument('--port', metavar='port', required=False, type=int, help='the port of the webthing serivce')
         parser.add_argument('--hostname', metavar='hostname', required=False, type=str, help='the hostname of the webthing serivce')
@@ -59,23 +63,23 @@ class App:
             self.print_info()
         elif args.command == 'deregister':
             if args.hostname is None:
-                print("--hostname is mandatory")
+                self.print_usage_info("--hostname is mandatory for deregister command")
             elif args.port is None:
-                print("--port is mandatory")
+                self.print_usage_info("--port is mandatory for deregister command")
             else:
                 self.unit.deregister(args.hostname, int(args.port))
         elif args.command == 'log':
             if args.hostname is None:
-                print("--hostname is mandatory")
+                self.print_usage_info("--hostname is mandatory for log command")
             elif args.port is None:
-                print("--port is mandatory")
+                self.print_usage_info("--port is mandatory for log command")
             else:
                 self.unit.printlog(int(args.port))
         else:
             if args.hostname is not None and args.port is not None:
                 if self.do_process_command(args.command, args.hostname, args.port, args.verbose, args):
                     return
-        print("usage " + self.entrypoint + " --help")
+            self.print_usage_info()
 
 
 

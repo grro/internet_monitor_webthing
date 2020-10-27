@@ -47,7 +47,7 @@ class InternetApp(App):
 
 
 def main():
-    App(PACKAGENAME, ENTRY_POINT, DESCRIPTION).handle_command()
+    InternetApp(PACKAGENAME, ENTRY_POINT, DESCRIPTION).handle_command()
 
 
 if __name__ == '__main__':
