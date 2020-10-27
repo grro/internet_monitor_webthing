@@ -46,7 +46,11 @@ class InternetApp(App):
             self.unit.register(hostname, port, args.speedtest_period, unit)
 
 
-if __name__ == '__main__':
+def main():
     App(PACKAGENAME, ENTRY_POINT, DESCRIPTION).handle_command()
+
+
+if __name__ == '__main__':
+    main()
 
 
