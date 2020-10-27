@@ -19,20 +19,26 @@ class App(ABC):
     def do_add_argument(self, parser):
         pass
 
-    def do_process_command(self, command:str, hostname: str, port: int, verbose: bool, args):
+    def do_process_command(self, command:str, hostname: str, port: int, verbose: bool, args) -> bool:
         return False
 
     def do_additional_listen_example_params(self):
         return ""
 
-    def print_usage_info(self, msg: str=None):
+    def print_usage_info(self, hostname: str, port: str, msg: str=None):
         if msg is not None:
             print(msg + "\n")
+
+        if hostname is None:
+            hostname = "192.168.0.23"
+        if port is None:
+            port = "9496"
+
         print("for command options usage")
         print(" sudo " + self.entrypoint + " --help")
         print("example commands")
-        print(" sudo " + self.entrypoint + " --command register --hostname 192.168.0.23 --port 9496 " + self.do_additional_listen_example_params())
-        print(" sudo " + self.entrypoint + " --command listen --hostname 192.168.0.23 --port 9496 " + self.do_additional_listen_example_params())
+        print(" sudo " + self.entrypoint + " --command register --hostname " + hostname + " --port " + port + " " + self.do_additional_listen_example_params())
+        print(" sudo " + self.entrypoint + " --command listen --hostname " + hostname + " --port " + port + " " + self.do_additional_listen_example_params())
         if len(self.unit.list_installed()) > 0:
             print("example commands for registered services")
             for service_info in self.unit.list_installed():
@@ -60,26 +66,26 @@ class App(ABC):
         logging.basicConfig(format='%(asctime)s %(name)-20s: %(levelname)-8s %(message)s', level=log_level, datefmt='%Y-%m-%d %H:%M:%S')
 
         if args.command is None:
-            self.print_usage_info()
+            self.print_usage_info(args.hostname, args.port)
         elif args.command == 'deregister':
             if args.hostname is None:
-                self.print_usage_info("--hostname is mandatory for deregister command")
+                self.print_usage_info(args.hostname, args.port, "--hostname is mandatory for deregister command")
             elif args.port is None:
-                self.print_usage_info("--port is mandatory for deregister command")
+                self.print_usage_info(args.hostname, args.port,"--port is mandatory for deregister command")
             else:
                 self.unit.deregister(args.hostname, int(args.port))
         elif args.command == 'log':
             if args.hostname is None:
-                self.print_usage_info("--hostname is mandatory for log command")
+                self.print_usage_info(args.hostname, args.port,"--hostname is mandatory for log command")
             elif args.port is None:
-                self.print_usage_info("--port is mandatory for log command")
+                self.print_usage_info(args.hostname, args.port, "--port is mandatory for log command")
             else:
                 self.unit.printlog(int(args.port))
         else:
             if args.hostname is not None and args.port is not None:
                 if self.do_process_command(args.command, args.hostname, args.port, args.verbose, args):
                     return
-            self.print_usage_info()
+            self.print_usage_info(args.hostname, args.port)
 
 
 
