@@ -80,7 +80,7 @@ class App(ABC):
             elif args.port is None:
                 self.print_usage_info(args.hostname, str(args.port), "--port is mandatory for log command")
             else:
-                self.unit.printlog(int(args.port))
+                self.unit.printlog(args.hostname, int(args.port))
         else:
             if args.hostname is not None and args.port is not None:
                 if self.do_process_command(args.command, args.hostname, args.port, args.verbose, args):
@@ -95,7 +95,7 @@ class Unit:
         self.packagename = packagename
 
     def register(self, hostname: str, port: int, unit: str):
-        service = self.packagename + "_" + hostname.encode("ascii").hex() + "_" + str(port) + ".service"
+        service = self.servicename(hostname, port)
         unit_file_fullname = str(pathlib.Path("/", "etc", "systemd", "system", service))
         with open(unit_file_fullname, "w") as file:
             file.write(unit)
@@ -105,7 +105,7 @@ class Unit:
         system("sudo systemctl status " + service)
 
     def deregister(self, hostname: str, port: int):
-        service = self.packagename + "_" + hostname.encode("ascii").hex() + "_" + str(port) + ".service"
+        service = self.servicename(hostname, port)
         unit_file_fullname = str(pathlib.Path("/", "etc", "systemd", "system", service))
         system("sudo systemctl stop " + service)
         system("sudo systemctl disable " + service)
@@ -115,10 +115,11 @@ class Unit:
         except Exception as e:
             pass
 
-    def printlog(self, port:int):
-        service = self.packagename + "_" + str(port) + ".service"
-        system("sudo journalctl -f -u " + service)
+    def printlog(self, hostname: str, port:int):
+        system("sudo journalctl -f -u " + self.servicename(hostname, port))
 
+    def servicename(self, hostname: str, port: int):
+        return self.packagename + "_" + hostname.encode("ascii").hex() + "_" + str(port) + ".service"
 
     def list_installed(self):
         services = []
