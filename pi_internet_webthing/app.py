@@ -44,11 +44,8 @@ class App(ABC):
             for service_info in self.unit.list_installed():
                 host = service_info[1]
                 port = service_info[2]
-                is_active = service_info[3]
+                print(" sudo " + self.entrypoint + " --command deregister --hostname " + host + " --port " + port)
                 print(" sudo " + self.entrypoint + " --command log --hostname " + host + " --port " + port)
-                if is_active:
-                    print(" sudo " + self.entrypoint + " --command deregister --hostname " + host + " --port " + port)
-
 
     def handle_command(self):
         parser = argparse.ArgumentParser(description=self.description)
