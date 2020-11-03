@@ -66,26 +66,26 @@ class App(ABC):
         logging.basicConfig(format='%(asctime)s %(name)-20s: %(levelname)-8s %(message)s', level=log_level, datefmt='%Y-%m-%d %H:%M:%S')
 
         if args.command is None:
-            self.print_usage_info(args.hostname, args.port)
+            self.print_usage_info(args.hostname, str(args.port))
         elif args.command == 'deregister':
             if args.hostname is None:
-                self.print_usage_info(args.hostname, args.port, "--hostname is mandatory for deregister command")
+                self.print_usage_info(args.hostname, str(args.port), "--hostname is mandatory for deregister command")
             elif args.port is None:
-                self.print_usage_info(args.hostname, args.port,"--port is mandatory for deregister command")
+                self.print_usage_info(args.hostname, str(args.port), "--port is mandatory for deregister command")
             else:
                 self.unit.deregister(args.hostname, int(args.port))
         elif args.command == 'log':
             if args.hostname is None:
-                self.print_usage_info(args.hostname, args.port,"--hostname is mandatory for log command")
+                self.print_usage_info(args.hostname, str(args.port), "--hostname is mandatory for log command")
             elif args.port is None:
-                self.print_usage_info(args.hostname, args.port, "--port is mandatory for log command")
+                self.print_usage_info(args.hostname, str(args.port), "--port is mandatory for log command")
             else:
                 self.unit.printlog(int(args.port))
         else:
             if args.hostname is not None and args.port is not None:
                 if self.do_process_command(args.command, args.hostname, args.port, args.verbose, args):
                     return
-            self.print_usage_info(args.hostname, args.port)
+            self.print_usage_info(args.hostname, str(args.port))
 
 
 
