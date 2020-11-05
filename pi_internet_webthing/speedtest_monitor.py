@@ -105,9 +105,9 @@ class InternetSpeedMonitorWebthing(Thing):
                      'last_test',
                      self.testdate,
                      metadata={
-                         'title': 'Last executed test time',
+                         'title': 'Last executed test date',
                          'type': 'string',
-                         'description': 'The date of the last successfully executed test',
+                         'description': 'The date of the last successfully executed test (iso 8601 string)',
                          'readOnly': True,
                      }))
 
