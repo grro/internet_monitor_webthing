@@ -120,7 +120,7 @@ class InternetSpeedMonitorWebthing(Thing):
                          '@type': 'LevelProperty',
                          'title': 'Speedtest execution period in seconds',
                          'type': 'number',
-                         'description': 'The speedtest execution period in seconds',
+                         'description': 'Speedtest execution period in seconds',
                          'unit': 'sec',
                          'readOnly': True,
                      }))
@@ -145,7 +145,7 @@ class InternetSpeedMonitorWebthing(Thing):
                      metadata={
                          'title': 'Speedtest result report url',
                          'type': 'string',
-                         'description': 'The speedtest result report url',
+                         'description': 'speedtest result report url',
                          'readOnly': True,
                      }))
 

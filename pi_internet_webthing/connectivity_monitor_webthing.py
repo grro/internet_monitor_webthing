@@ -19,9 +19,6 @@ class ConnectionInfo:
     def __eq__(self, other):
         return self.is_connected == other.is_connected and self.ip_address == other.ip_address
 
-    def __str__(self):
-        return self.date.isoformat()  + ", " + str(self.is_connected) + ", " + self.ip_address
-
 
 class ConnectedRunner:
 
@@ -121,7 +118,7 @@ class InternetConnectivityMonitorWebthing(Thing):
                      self.internet_connected,
                      metadata={
                          '@type': 'BooleanProperty',
-                         'title': 'Internet connected',
+                         'title': 'Internet connected flag',
                          "type": "boolean",
                          'description': 'Whether the internet is connected',
                          'readOnly': True,
@@ -134,7 +131,7 @@ class InternetConnectivityMonitorWebthing(Thing):
                      self.test_url,
                      metadata={
                          '@type': 'Name',
-                         'title': 'url',
+                         'title': 'Internet connection test url',
                          "type": "string",
                          'description': 'The url to connect',
                          'readOnly': True,
@@ -147,9 +144,9 @@ class InternetConnectivityMonitorWebthing(Thing):
                      self.testperiod,
                      metadata={
                          '@type': 'LevelProperty',
-                         'title': 'connecttest execution period',
+                         'title': 'Internet connect test execution period in seconds',
                          'type': 'number',
-                         'description': 'The connecttest execution period',
+                         'description': 'The Internet connect test execution period in seconds',
                          'unit': 'sec',
                          'readOnly': True,
                      }))
@@ -160,10 +157,9 @@ class InternetConnectivityMonitorWebthing(Thing):
                      'ip_address',
                      self.ip_address,
                      metadata={
-                         '@type': 'IpAddressProperty',
-                         'title': 'The ip address',
+                         'title': 'Public IP address',
                          'type': 'string',
-                         'description': 'The ip address used for internet connection',
+                         'description': 'The public WAN IP address used for internet connection',
                          'readOnly': True,
                      }))
 
@@ -173,10 +169,9 @@ class InternetConnectivityMonitorWebthing(Thing):
                      'connection_history',
                      self.connection_history,
                      metadata={
-                         '@type': 'List',
-                         'title': 'The connection history',
-                         'type': 'list',
-                         'description': 'The connection history',
+                         'title': 'Availability report',
+                         'type': 'array',
+                         'description': 'The availability report',
                          'readOnly': True,
                      }))
 
@@ -191,9 +186,22 @@ class InternetConnectivityMonitorWebthing(Thing):
         self.internet_connected.notify_of_external_update(connection_info.is_connected)
         self.ip_address.notify_of_external_update(connection_info.ip_address)
 
-    def __on_connection_history_updated(self, connetion_history: List[ConnectionInfo]):
-        self.ioloop.add_callback(self.__update_connection_history_prop, connetion_history)
+    def __on_connection_history_updated(self, connection_history: List[ConnectionInfo]):
+        self.ioloop.add_callback(self.__update_connection_history_prop, connection_history)
 
-    def __update_connection_history_prop(self, connetion_history: List[ConnectionInfo]):
-        history = [str(info) for info in connetion_history]
-        self.connection_history.notify_of_external_update(history)
+    def __update_connection_history_prop(self, connection_history: List[ConnectionInfo]):
+        self.connection_history.notify_of_external_update(self.to_history_report(connection_history))
+
+    def to_history_report(self, connection_history: List[ConnectionInfo]):
+        history_with_duration = list()
+
+        previous_connected = True
+        previous_date = None
+        for info in connection_history:
+            elapsed = " "
+            if previous_date is not None and info.is_connected and not previous_connected:
+                elapsed = str(int((info.date - previous_date).total_seconds()))
+            previous_date = info.date
+            previous_connected = info.is_connected
+            history_with_duration.append(info.date.isoformat() + ", " + str(info.is_connected) + ", " + elapsed + ", "  + info.ip_address)
+        return history_with_duration
