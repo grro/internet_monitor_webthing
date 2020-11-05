@@ -99,29 +99,29 @@ class InternetSpeedMonitorWebthing(Thing):
                          'readOnly': True,
                      }))
 
-        self.testperiod = Value(speedtest_period)
-        self.add_property(
-            Property(self,
-                     'test_period',
-                     self.testperiod,
-                     metadata={
-                         '@type': 'LevelProperty',
-                         'title': 'speedtest execution period',
-                         'type': 'number',
-                         'description': 'The speedtest execution period',
-                         'unit': 'sec',
-                         'readOnly': True,
-                     }))
-
         self.testdate = Value("")
         self.add_property(
             Property(self,
                      'last_test',
                      self.testdate,
                      metadata={
-                         'title': 'date of the last test',
+                         'title': 'Last executed test time',
                          'type': 'string',
                          'description': 'The date of the last successfully executed test',
+                         'readOnly': True,
+                     }))
+
+        self.testperiod = Value(speedtest_period)
+        self.add_property(
+            Property(self,
+                     'speedtest_exection_period',
+                     self.testperiod,
+                     metadata={
+                         '@type': 'LevelProperty',
+                         'title': 'Speedtest execution period in seconds',
+                         'type': 'number',
+                         'description': 'The speedtest execution period in seconds',
+                         'unit': 'sec',
                          'readOnly': True,
                      }))
 
@@ -131,7 +131,7 @@ class InternetSpeedMonitorWebthing(Thing):
                      'speedtest_server',
                      self.testserver,
                      metadata={
-                         'title': 'speedtest servername',
+                         'title': 'Speedtest servername',
                          'type': 'string',
                          'description': 'The speedtest server which has been connected to perform the speedtest',
                          'readOnly': True,
@@ -143,9 +143,9 @@ class InternetSpeedMonitorWebthing(Thing):
                      'speedtest_result_uri',
                      self.resulturi,
                      metadata={
-                         'title': 'The speedtest result uri',
+                         'title': 'Speedtest result report url',
                          'type': 'string',
-                         'description': 'The speedtest result report uri',
+                         'description': 'The speedtest result report url',
                          'readOnly': True,
                      }))
 
