@@ -64,7 +64,7 @@ class InternetSpeedMonitorWebthing(Thing):
                      self.downloadspeed,
                      metadata={
                          '@type': 'LevelProperty',
-                         'title': 'Internet downloadspeed',
+                         'title': 'Internet download speed',
                          'type': 'number',
                          'description': 'The current internet download  speed',
                          'unit': 'Mbit/sec',
@@ -78,7 +78,7 @@ class InternetSpeedMonitorWebthing(Thing):
                      self.uploadspeed,
                      metadata={
                          '@type': 'LevelProperty',
-                         'title': 'Internet uploadspeed',
+                         'title': 'Internet upload speed',
                          'type': 'number',
                          'description': 'The current internet upload speed',
                          'unit': 'Mbit/sec',
@@ -92,7 +92,7 @@ class InternetSpeedMonitorWebthing(Thing):
                      self.ping_time,
                      metadata={
                          '@type': 'LevelProperty',
-                         'title': 'Internet ping',
+                         'title': 'Internet ping (latency)',
                          'type': 'number',
                          'description': 'The current internet ping latency',
                          'unit': 'milliseconds',
