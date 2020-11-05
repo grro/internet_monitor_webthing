@@ -116,13 +116,12 @@ class InternetSpeedMonitorWebthing(Thing):
         self.testdate = Value("")
         self.add_property(
             Property(self,
-                     'testdate',
+                     'last_test',
                      self.testdate,
                      metadata={
-                         '@type': 'Name',
-                         'title': 'The test date',
+                         'title': 'date of the last test',
                          'type': 'string',
-                         'description': 'The last speedtest execution date',
+                         'description': 'The date of the last successfully executed test',
                          'readOnly': True,
                      }))
 
@@ -132,23 +131,21 @@ class InternetSpeedMonitorWebthing(Thing):
                      'speedtest_server',
                      self.testserver,
                      metadata={
-                         '@type': 'Name',
-                         'title': 'The speedtest server',
+                         'title': 'speedtest server',
                          'type': 'string',
-                         'description': 'The server which has been connected to perform the speedtest',
+                         'description': 'The speedtest server which has been connected to perform the speedtest',
                          'readOnly': True,
                      }))
 
         self.resulturi = Value("")
         self.add_property(
             Property(self,
-                     'speedtest_report_uri',
+                     'speedtest_result_uri',
                      self.resulturi,
                      metadata={
-                         '@type': 'Name',
-                         'title': 'The speedtest report uri',
+                         'title': 'The speedtest result uri',
                          'type': 'string',
-                         'description': 'The speedtest report uri',
+                         'description': 'The speedtest result report uri',
                          'readOnly': True,
                      }))
 

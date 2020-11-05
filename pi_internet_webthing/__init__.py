@@ -1,4 +1,4 @@
-from pi_internet_webthing.internet import run_server
+from pi_internet_webthing.internet_webthing import run_server
 from pi_internet_webthing.app import App
 from string import Template
 
