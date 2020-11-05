@@ -60,7 +60,7 @@ class InternetSpeedMonitorWebthing(Thing):
         self.downloadspeed = Value(0)
         self.add_property(
             Property(self,
-                     'downloadspeed',
+                     'download speed',
                      self.downloadspeed,
                      metadata={
                          '@type': 'LevelProperty',
@@ -74,7 +74,7 @@ class InternetSpeedMonitorWebthing(Thing):
         self.uploadspeed = Value(0)
         self.add_property(
             Property(self,
-                     'uploadspeed',
+                     'upload speed',
                      self.uploadspeed,
                      metadata={
                          '@type': 'LevelProperty',
@@ -88,7 +88,7 @@ class InternetSpeedMonitorWebthing(Thing):
         self.ping_time = Value(0)
         self.add_property(
             Property(self,
-                     'ping',
+                     'ping time',
                      self.ping_time,
                      metadata={
                          '@type': 'LevelProperty',
@@ -102,7 +102,7 @@ class InternetSpeedMonitorWebthing(Thing):
         self.testperiod = Value(speedtest_period)
         self.add_property(
             Property(self,
-                     'test_period',
+                     'test period',
                      self.testperiod,
                      metadata={
                          '@type': 'LevelProperty',
@@ -116,7 +116,7 @@ class InternetSpeedMonitorWebthing(Thing):
         self.testdate = Value("")
         self.add_property(
             Property(self,
-                     'last_test',
+                     'last executed test',
                      self.testdate,
                      metadata={
                          'title': 'date of the last test',
@@ -128,10 +128,10 @@ class InternetSpeedMonitorWebthing(Thing):
         self.testserver = Value("")
         self.add_property(
             Property(self,
-                     'speedtest_server',
+                     'speedtest servername',
                      self.testserver,
                      metadata={
-                         'title': 'speedtest server',
+                         'title': 'speedtest servername',
                          'type': 'string',
                          'description': 'The speedtest server which has been connected to perform the speedtest',
                          'readOnly': True,
@@ -140,7 +140,7 @@ class InternetSpeedMonitorWebthing(Thing):
         self.resulturi = Value("")
         self.add_property(
             Property(self,
-                     'speedtest_result_uri',
+                     'speedtest result uri',
                      self.resulturi,
                      metadata={
                          'title': 'The speedtest result uri',
