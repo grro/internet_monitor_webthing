@@ -118,7 +118,7 @@ class InternetConnectivityMonitorWebthing(Thing):
                      self.internet_connected,
                      metadata={
                          '@type': 'BooleanProperty',
-                         'title': 'Internet connected flag',
+                         'title': 'Internet is connected',
                          "type": "boolean",
                          'description': 'Whether the internet is connected',
                          'readOnly': True,
@@ -144,9 +144,9 @@ class InternetConnectivityMonitorWebthing(Thing):
                      self.testperiod,
                      metadata={
                          '@type': 'LevelProperty',
-                         'title': 'Internet connect test execution period in seconds',
+                         'title': 'Internet connection test execution period in seconds',
                          'type': 'number',
-                         'description': 'The Internet connect test execution period in seconds',
+                         'description': 'The Internet connection test execution period in seconds',
                          'unit': 'sec',
                          'readOnly': True,
                      }))
