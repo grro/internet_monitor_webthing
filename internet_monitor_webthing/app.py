@@ -113,7 +113,9 @@ class Unit:
             pass
 
     def printlog(self, hostname: str, port:int):
-        system("sudo journalctl -f -u " + self.servicename(hostname, port))
+        cmd = "sudo journalctl -f -u " + self.servicename(hostname, port)
+        print(cmd)
+        system(cmd)
 
     def servicename(self, hostname: str, port: int):
         return self.packagename + "_" + hostname.encode("ascii").hex() + "_" + str(port) + ".service"

@@ -68,12 +68,10 @@ class ConnectionHistory:
     def __init__(self, updated_listener):
         self.updated_listener = updated_listener
         self.history_log = self.__load()
-        self.filename = "history.p"
-        state_directory = os.getenv('STATE_DIRECTORY')
-        if state_directory is not None:
-            self.filename = os.path.join(state_directory, self.filename)
+        dir = os.path.join("var", "lib", "netmonitor")
+        os.makedirs(dir, exist_ok=True)
+        self.filename = os.path.join(dir, "history.p")
         logging.info("connection historey file: " + str(self.filename))
-
 
     def __load(self):
         try:
