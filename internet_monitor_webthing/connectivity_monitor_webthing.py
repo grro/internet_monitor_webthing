@@ -3,6 +3,7 @@ from datetime import datetime
 from dataclasses import dataclass
 from typing import List
 import logging
+import os
 import pickle
 import requests
 import threading
@@ -62,16 +63,21 @@ class ConnectedRunner:
             return "???"
 
 
-class ConnetionHistory:
-    FILENAME = "history.p"
+class ConnectionHistory:
 
     def __init__(self, updated_listener):
         self.updated_listener = updated_listener
         self.history_log = self.__load()
+        self.filename = "history.p"
+        state_directory = os.getenv('STATE_DIRECTORY')
+        if state_directory is not None:
+            self.filename = os.path.join(state_directory, self.filename)
+        logging.info("connection historey file: " + str(self.filename))
+
 
     def __load(self):
         try:
-            with open(self.FILENAME, "rb") as file:
+            with open(self.filename, "rb") as file:
                 data = pickle.load(file)
                 return data
         except Exception as e:
@@ -80,7 +86,7 @@ class ConnetionHistory:
 
     def __store(self):
         try:
-            with open(self.FILENAME, "wb") as file:
+            with open(self.filename, "wb") as file:
                 pickle.dump(self.history_log, file)
         except Exception as e:
             logging.error(e)
@@ -108,7 +114,7 @@ class InternetConnectivityMonitorWebthing(Thing):
             ['MultiLevelSensor'],
             description
         )
-        self.history = ConnetionHistory(self.__on_connection_history_updated)
+        self.history = ConnectionHistory(self.__on_connection_history_updated)
         self.connecttest_period = connecttest_period
 
         self.internet_connected = Value(False)

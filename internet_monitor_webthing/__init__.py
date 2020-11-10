@@ -18,6 +18,7 @@ ExecStart=$entrypoint --command listen --hostname $hostname --port $port --verbo
 SyslogIdentifier=$packagename
 StandardOutput=syslog
 StandardError=syslog
+StateDirectory=/var/lib/netmonitor
 Restart=always
 RestartSec=3
 
