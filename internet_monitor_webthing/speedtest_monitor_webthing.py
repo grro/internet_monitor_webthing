@@ -118,7 +118,7 @@ class InternetSpeedMonitorWebthing(Thing):
                      self.testperiod,
                      metadata={
                          '@type': 'LevelProperty',
-                         'title': 'Speedtest execution period in seconds',
+                         'title': 'Speedtest execution period',
                          'type': 'number',
                          'description': 'Speedtest execution period in seconds',
                          'unit': 'sec',

@@ -73,14 +73,14 @@ class ConnectionHistory:
         self.filename = os.path.join(dir, "history.p")
         logging.info("connection historey file: " + str(self.filename))
 
-    def __load(self):
+    def __load(self) -> List[ConnectionInfo]:
         try:
             with open(self.filename, "rb") as file:
                 data = pickle.load(file)
                 return data
         except Exception as e:
             logging.error(e)
-            return []
+            return list()
 
     def __store(self):
         try:
