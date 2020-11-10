@@ -1,5 +1,5 @@
-from pi_internet_webthing.connectivity_monitor_webthing import InternetConnectivityMonitorWebthing
-from pi_internet_webthing.speedtest_monitor_webthing import InternetSpeedMonitorWebthing
+from internet_monitor_webthing.connectivity_monitor_webthing import InternetConnectivityMonitorWebthing
+from internet_monitor_webthing.speedtest_monitor_webthing import InternetSpeedMonitorWebthing
 from webthing import (MultipleThings, WebThingServer)
 import logging
 

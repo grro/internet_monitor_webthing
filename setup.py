@@ -1,7 +1,7 @@
 from setuptools import setup
 from os import path
 
-PACKAGENAME = 'pi_internet_webthing'
+PACKAGENAME = 'internet_monitor_webthing'
 ENTRY_POINT = "netmonitor"
 DESCRIPTION = "A web connected local internet speed and connectivity monitor"
 
@@ -25,7 +25,7 @@ setup(
     license='MIT',
     author='Gregor Roth',
     author_email='gregor.roth@web.de',
-    url='https://github.com/grro/pi_internet_webthing',
+    url='https://github.com/grro/internet_monitor_webthing',
     entry_points={
         'console_scripts': [
             ENTRY_POINT + '=' + PACKAGENAME + ':main'

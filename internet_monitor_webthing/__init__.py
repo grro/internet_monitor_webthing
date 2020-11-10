@@ -1,8 +1,8 @@
-from pi_internet_webthing.internet_multiple_webthing import run_server
-from pi_internet_webthing.app import App
+from internet_monitor_webthing.internet_multiple_webthing import run_server
+from internet_monitor_webthing.app import App
 from string import Template
 
-PACKAGENAME = 'pi_internet_webthing'
+PACKAGENAME = 'internet_monitor_webthing'
 ENTRY_POINT = "netmonitor"
 DESCRIPTION = "A web connected local internet speed and connectivity monitor"
 
