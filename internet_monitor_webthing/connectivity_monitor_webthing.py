@@ -56,9 +56,10 @@ class ConnectedRunner:
             now = datetime.now()
             if (now - self.cache_time).seconds > max_cache_ttl:
                 response = requests.get('http://whatismyip.akamai.com/')
-                self.cache_ip_address = response.text
-                self.cache_time = now
-            return self.cache_ip_address
+                if (response.status_code >= 200) and (response.status_code < 300):
+                    self.cache_ip_address = response.text
+                    self.cache_time = now
+                return self.cache_ip_address
         except Exception as e:
             return "???"
 
@@ -207,8 +208,17 @@ class InternetConnectivityMonitorWebthing(Thing):
         for info in connection_history:
             elapsed = " "
             if previous_date is not None and info.is_connected and not previous_connected:
-                elapsed = str(int((info.date - previous_date).total_seconds()))
+                elapsed = int((info.date - previous_date).total_seconds())
             previous_date = info.date
             previous_connected = info.is_connected
-            history_with_duration.append(info.date.isoformat() + ", " + str(info.is_connected) + ", " + elapsed + ", "  + info.ip_address)
+            history_with_duration.append(info.date.isoformat() + ", " + str(info.is_connected) + ", " + InternetConnectivityMonitorWebthing.print_duration(elapsed) + ", "  + info.ip_address)
         return history_with_duration
+
+    @staticmethod
+    def print_duration(duration: int):
+        if duration > (60 * 60):
+            return "{0:.1f} h".format(duration/(60*60))
+        elif duration > 60:
+            return "{0:.1f} min".format(duration/60)
+        else:
+            return "{0:.1f} sec".format(duration)
