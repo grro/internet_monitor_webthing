@@ -93,7 +93,7 @@ class ConnectionHistory:
     def on_connection_info_fetched(self, connection_info: ConnectionInfo):
         if len(self.history_log) > 0 and self.history_log[len(self.history_log) -1] == connection_info:
             return
-        if len(self.history_log) > 50:
+        if len(self.history_log) > 500:
             del self.history_log[0]
         self.history_log.append(connection_info)
         self.updated_listener(self.history_log)
