@@ -72,7 +72,7 @@ class ConnectionHistory:
         dir = os.path.join("var", "lib", "netmonitor")
         os.makedirs(dir, exist_ok=True)
         self.filename = os.path.join(dir, "history.p")
-        logging.info("connection historey file: " + str(self.filename))
+        logging.info("connection history file: " + str(self.filename))
 
     def __load(self) -> List[ConnectionInfo]:
         try:
