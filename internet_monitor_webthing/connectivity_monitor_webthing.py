@@ -42,7 +42,8 @@ class ConnectedRunner:
     def __measure(self, test_uri) -> ConnectionInfo:
         try:
             requests.get(test_uri)
-            return ConnectionInfo(datetime.now(), True, self.__get_internet_address(60))
+            ip_address = self.__get_internet_address(60)
+            return ConnectionInfo(datetime.now(), True, ip_address)
         except:
             self.__invalidate_cache()
             return ConnectionInfo(datetime.now(), False, "")
@@ -68,7 +69,7 @@ class ConnectionHistory:
 
     def __init__(self, updated_listener):
         self.updated_listener = updated_listener
-        dir = os.path.join("var", "lib", "netmonitor")
+        dir = os.path.join("var", "lib", "netmonitor2")
         os.makedirs(dir, exist_ok=True)
         self.filename = os.path.join(dir, "history.p")
         logging.info("connection history file: " + str(self.filename))
@@ -91,8 +92,11 @@ class ConnectionHistory:
             logging.error(e)
 
     def on_connection_info_fetched(self, connection_info: ConnectionInfo):
-        if len(self.history_log) > 0 and self.history_log[len(self.history_log) -1] == connection_info:
-            return
+        if len(self.history_log) > 0:
+            previous_connection_info = self.history_log[len(self.history_log) -1]
+            if previous_connection_info.is_connected == connection_info.is_connected:
+                if connection_info.ip_address is None or previous_connection_info.ip_address is not None:
+                    return
         if len(self.history_log) > 500:
             del self.history_log[0]
         self.history_log.append(connection_info)
@@ -214,17 +218,17 @@ class InternetConnectivityMonitorWebthing(Thing):
                 ip_address = ""
             else:
                 ip_address = info.ip_address
-            history_with_duration.append(info.date.isoformat() + ", " + str(info.is_connected) + ", " + InternetConnectivityMonitorWebthing.print_duration(elapsed) + ", " + ip_address)
+            history_with_duration.append(info.date.isoformat() + ", " + str(info.is_connected) + ", " + ip_address + ", " + InternetConnectivityMonitorWebthing.print_duration(elapsed))
         return history_with_duration
 
 
     @staticmethod
     def print_duration(duration: int):
         if duration > (60 * 60):
-            return "{0:.1f} h".format(duration/(60*60))
+            return "reconnected after {0:.1f} h".format(duration/(60*60))
         elif duration > 60:
-            return "{0:.1f} min".format(duration/60)
+            return "reconnected after {0:.1f} min".format(duration/60)
         elif duration > 0:
-            return "{0:.1f} sec".format(duration)
+            return "reconnected after {0:.1f} sec".format(duration)
         else:
             return " "
