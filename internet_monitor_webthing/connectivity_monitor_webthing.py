@@ -206,7 +206,7 @@ class InternetConnectivityMonitorWebthing(Thing):
         previous_connected = True
         previous_date = None
         for info in connection_history:
-            elapsed = " "
+            elapsed = 0
             if previous_date is not None and info.is_connected and not previous_connected:
                 elapsed = int((info.date - previous_date).total_seconds())
             previous_date = info.date
@@ -220,5 +220,7 @@ class InternetConnectivityMonitorWebthing(Thing):
             return "{0:.1f} h".format(duration/(60*60))
         elif duration > 60:
             return "{0:.1f} min".format(duration/60)
-        else:
+        elif duration > 0:
             return "{0:.1f} sec".format(duration)
+        else:
+            return " "
