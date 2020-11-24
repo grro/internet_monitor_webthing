@@ -202,7 +202,6 @@ class InternetConnectivityMonitorWebthing(Thing):
     @staticmethod
     def to_history_report(connection_history: List[ConnectionInfo]):
         history_with_duration = list()
-
         previous_connected = True
         previous_date = None
         for info in connection_history:
@@ -211,8 +210,13 @@ class InternetConnectivityMonitorWebthing(Thing):
                 elapsed = int((info.date - previous_date).total_seconds())
             previous_date = info.date
             previous_connected = info.is_connected
-            history_with_duration.append(info.date.isoformat() + ", " + str(info.is_connected) + ", " + InternetConnectivityMonitorWebthing.print_duration(elapsed) + ", "  + info.ip_address)
+            if info.ip_address is None:
+                ip_address = ""
+            else:
+                ip_address = info.ip_address
+            history_with_duration.append(info.date.isoformat() + ", " + str(info.is_connected) + ", " + InternetConnectivityMonitorWebthing.print_duration(elapsed) + ", " + ip_address)
         return history_with_duration
+
 
     @staticmethod
     def print_duration(duration: int):
