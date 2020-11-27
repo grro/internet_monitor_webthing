@@ -218,7 +218,12 @@ class InternetConnectivityMonitorWebthing(Thing):
                 ip_address = ""
             else:
                 ip_address = info.ip_address
-            history_with_duration.append(info.date.isoformat() + ", " + str(info.is_connected) + ", " + ip_address + ", " + InternetConnectivityMonitorWebthing.print_duration(elapsed))
+
+            if info.is_connected:
+                status = "reconnected"
+            else:
+                status = "disconnected"
+            history_with_duration.append(info.date.isoformat() + ", " + status + ", " + ip_address + ", " + InternetConnectivityMonitorWebthing.print_duration(elapsed))
         return history_with_duration
 
 
