@@ -24,6 +24,7 @@ class ConnectionInfo:
 class ConnectedRunner:
 
     def __init__(self):
+        self.previous_connection_info = None
         self.cache_ip_address = ""
         self.cache_time = datetime.fromtimestamp(555)
 
@@ -34,10 +35,24 @@ class ConnectedRunner:
         while True:
             try:
                 connected_info = self.__measure(test_server)
-                listener(connected_info)
+                if self.is_state_updated(connected_info):
+                    listener(connected_info)
             except Exception as e:
                 logging.error(e)
             time.sleep(measure_period_sec)
+
+    def is_state_updated(self, new_connection_info: ConnectionInfo) -> bool:
+        try:
+            if self.previous_connection_info is not None:
+                # state changed
+                if self.previous_connection_info.is_connected != new_connection_info.is_connected:
+                    return True
+                # new ip address assigned
+                if (self.previous_connection_info.ip_address is not None) and (self.previous_connection_info.ip_address != new_connection_info.ip_address):
+                    return True
+            return False
+        finally:
+            self.previous_connection_info = new_connection_info
 
     def __measure(self, test_uri) -> ConnectionInfo:
         try:
@@ -60,7 +75,7 @@ class ConnectedRunner:
                 if (response.status_code >= 200) and (response.status_code < 300):
                     self.cache_ip_address = response.text
                     self.cache_time = now
-                return self.cache_ip_address
+            return self.cache_ip_address
         except Exception as e:
             return "???"
 
@@ -92,11 +107,6 @@ class ConnectionHistory:
             logging.error(e)
 
     def on_connection_info_fetched(self, connection_info: ConnectionInfo):
-        if len(self.history_log) > 0:
-            previous_connection_info = self.history_log[len(self.history_log) -1]
-            if previous_connection_info.is_connected == connection_info.is_connected:
-                if connection_info.ip_address is None or previous_connection_info.ip_address is not None:
-                    return
         if len(self.history_log) > 500:
             del self.history_log[0]
         self.history_log.append(connection_info)
@@ -209,9 +219,10 @@ class InternetConnectivityMonitorWebthing(Thing):
         previous_connected = True
         previous_date = None
         for info in connection_history:
-            elapsed = 0
+            elapsed = ""
             if previous_date is not None and info.is_connected and not previous_connected:
-                elapsed = int((info.date - previous_date).total_seconds())
+                elapsed_sec = int((info.date - previous_date).total_seconds())
+                elapsed = InternetConnectivityMonitorWebthing.print_duration(elapsed_sec)
             previous_date = info.date
             previous_connected = info.is_connected
             if info.ip_address is None:
@@ -223,7 +234,7 @@ class InternetConnectivityMonitorWebthing(Thing):
                 status = "reconnected"
             else:
                 status = "disconnected"
-            history_with_duration.append(info.date.isoformat() + ", " + status + ", " + ip_address + ", " + InternetConnectivityMonitorWebthing.print_duration(elapsed))
+            history_with_duration.append(info.date.isoformat() + ", " + status + ", " + ip_address + ", " + elapsed)
         return history_with_duration
 
 
@@ -233,7 +244,5 @@ class InternetConnectivityMonitorWebthing(Thing):
             return "reconnected after {0:.1f} h".format(duration/(60*60))
         elif duration > 60:
             return "reconnected after {0:.1f} min".format(duration/60)
-        elif duration > 0:
-            return "reconnected after {0:.1f} sec".format(duration)
         else:
-            return " "
+            return "reconnected after {0:.1f} sec".format(duration)
