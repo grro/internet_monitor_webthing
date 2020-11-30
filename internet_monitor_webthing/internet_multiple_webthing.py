@@ -12,7 +12,7 @@ def run_server(hostname: str, port: int, description: str, speedtest_period: int
         services.append(InternetConnectivityMonitorWebthing(description, connecttest_period, connecttest_url))
 
     if len(services) > 0:
-        print("running Internet " + ", ".join([service.get_title() for service in services]) + " on " + hostname + "/" + str(port))
+        print("running Internet " + ", ".join([service.get_title() for service in services]) + " on " + hostname + ":" + str(port))
         server = WebThingServer(MultipleThings(services, "Internet Monitor"), hostname=hostname, port=port)
         try:
             logging.info('starting the server')

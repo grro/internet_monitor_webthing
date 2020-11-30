@@ -1,4 +1,4 @@
-from webthing import (Property, Thing, Value)
+from webthing import (Property, Thing, Value, Action)
 from speedtest import Speedtest
 from dataclasses import dataclass
 from datetime import datetime
@@ -6,6 +6,7 @@ import tornado.ioloop
 import threading
 import time
 import logging
+import uuid
 
 
 @dataclass
@@ -19,19 +20,22 @@ class Speed:
 
 class SpeedtestRunner:
 
-    def listen(self, listener, measure_period_sec: int):
-        threading.Thread(target=self.__measure_periodically, args=(measure_period_sec, listener), daemon=True).start()
+    def __init__(self, listener):
+        self.listener = listener
 
-    def __measure_periodically(self, measure_period_sec: int, listener):
+    def run_periodically(self, measure_period_sec: int):
+        threading.Thread(target=self.__measure_periodically, args=(measure_period_sec,), daemon=True).start()
+
+    def __measure_periodically(self, measure_period_sec: int):
         while True:
             try:
-                speed = self.__measure()
-                listener(speed)
+                speed = self.measure()
+                self.listener(speed)
             except Exception as e:
                 logging.error(e)
             time.sleep(measure_period_sec)
 
-    def __measure(self) -> Speed:
+    def measure(self) -> Speed:
         s = Speedtest()
         s.download()
         s.upload()
@@ -41,6 +45,15 @@ class SpeedtestRunner:
             link = None
         metrics = s.results.dict()
         return Speed(metrics['server'].get('sponsor', '') + "/" + metrics['server'].get('name', ''), int(metrics['download']), int(metrics['upload']), metrics['ping'], link)
+
+
+class TriggerSpeedTest(Action):
+
+    def __init__(self, thing, input_):
+        Action.__init__(self, uuid.uuid4().hex, thing, 'trigger', input_=input_)
+
+    def perform_action(self):
+        self.thing.speedtest_runner.measure()
 
 
 class InternetSpeedMonitorWebthing(Thing):
@@ -150,7 +163,15 @@ class InternetSpeedMonitorWebthing(Thing):
                      }))
 
         self.ioloop = tornado.ioloop.IOLoop.current()
-        SpeedtestRunner().listen(self.__on_speed_updated, self.testperiod.get())
+        self.speedtest_runner = SpeedtestRunner(self.__on_speed_updated)
+        self.add_available_action(
+            'trigger',
+            {
+                'title': 'Trigger',
+                'description': 'Triggers a speed test run',
+            },
+            TriggerSpeedTest)
+        self.speedtest_runner.run_periodically(self.testperiod.get())
 
     def __on_speed_updated(self, speed: Speed):
         self.ioloop.add_callback(self.__update_speed_props, speed)
