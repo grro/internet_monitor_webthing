@@ -1,7 +1,7 @@
 from webthing import (Property, Thing, Value)
 from datetime import datetime
 from dataclasses import dataclass
-from typing import List
+from typing import List, Optional
 import logging
 import os
 import pickle
@@ -23,8 +23,8 @@ class ConnectionInfo:
 
 class ConnectedRunner:
 
-    def __init__(self):
-        self.previous_connection_info = None
+    def __init__(self, previous_connection_info : ConnectionInfo):
+        self.previous_connection_info = previous_connection_info
         self.cache_ip_address = ""
         self.cache_time = datetime.fromtimestamp(555)
 
@@ -43,13 +43,12 @@ class ConnectedRunner:
 
     def is_state_updated(self, new_connection_info: ConnectionInfo) -> bool:
         try:
-            if self.previous_connection_info is not None:
-                # state changed
-                if self.previous_connection_info.is_connected != new_connection_info.is_connected:
-                    return True
-                # new ip address assigned
-                if (self.previous_connection_info.ip_address is not None) and (self.previous_connection_info.ip_address != new_connection_info.ip_address):
-                    return True
+            # state changed
+            if self.previous_connection_info.is_connected != new_connection_info.is_connected:
+                return True
+            # new ip address assigned
+            if (self.previous_connection_info.ip_address is not None) and (self.previous_connection_info.ip_address != new_connection_info.ip_address):
+                return True
             return False
         finally:
             self.previous_connection_info = new_connection_info
@@ -113,6 +112,13 @@ class ConnectionHistory:
         self.updated_listener(self.history_log)
         self.__store()
 
+    def get_newest(self) -> Optional[ConnectionInfo]:
+        if len(self.history_log) > 0:
+            return self.history_log[-1]
+        else:
+            return ConnectionInfo(datetime.now(), False, "")
+
+
 
 class InternetConnectivityMonitorWebthing(Thing):
 
@@ -128,9 +134,10 @@ class InternetConnectivityMonitorWebthing(Thing):
             description
         )
         self.history = ConnectionHistory(self.__on_connection_history_updated)
+        latest_info = self.history.get_newest()
         self.connecttest_period = connecttest_period
 
-        self.internet_connected = Value(False)
+        self.internet_connected = Value(latest_info.is_connected)
         self.add_property(
             Property(self,
                      'connected',
@@ -170,7 +177,7 @@ class InternetConnectivityMonitorWebthing(Thing):
                          'readOnly': True,
                      }))
 
-        self.ip_address = Value("")
+        self.ip_address = Value(latest_info.ip_address)
         self.add_property(
             Property(self,
                      'ip_address',
@@ -195,7 +202,7 @@ class InternetConnectivityMonitorWebthing(Thing):
                      }))
 
         self.ioloop = tornado.ioloop.IOLoop.current()
-        ConnectedRunner().listen(self.__on_connected_data_fetched, self.testperiod.get(), self.test_url.get())
+        ConnectedRunner(latest_info).listen(self.__on_connected_data_fetched, self.testperiod.get(), self.test_url.get())
 
         self.__on_connection_history_updated(self.history.history_log)
 
