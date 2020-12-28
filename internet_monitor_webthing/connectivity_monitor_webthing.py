@@ -224,24 +224,32 @@ class InternetConnectivityMonitorWebthing(Thing):
     def to_history_report(connection_history: List[ConnectionInfo]):
         history_with_duration = list()
         previous_connected = True
+        previous_ip_address = ''
         previous_date = None
+
         for info in connection_history:
-            elapsed = ""
-            if previous_date is not None and info.is_connected and not previous_connected:
-                elapsed_sec = int((info.date - previous_date).total_seconds())
-                elapsed = InternetConnectivityMonitorWebthing.print_duration(elapsed_sec)
-            previous_date = info.date
-            previous_connected = info.is_connected
             if info.ip_address is None:
-                ip_address = ""
+              ip_address = ""
             else:
                 ip_address = info.ip_address
-
             if info.is_connected:
-                status = "reconnected"
+                status = "connected"
             else:
                 status = "disconnected"
-            history_with_duration.append(info.date.isoformat() + ", " + status + ", " + ip_address + ", " + elapsed)
+
+            detail = ""
+            if previous_date is not None and info.is_connected and not previous_connected:
+                elapsed_sec = int((info.date - previous_date).total_seconds())
+                detail = InternetConnectivityMonitorWebthing.print_duration(elapsed_sec)
+            elif (info.ip_address is None) and (previous_ip_address != info.ip_address):
+                detail = "ip address updated"
+
+            if info.ip_address is None:
+                previous_ip_address = info.ip_address
+            previous_date = info.date
+            previous_connected = info.is_connected
+
+            history_with_duration.append(info.date.isoformat() + ", " + status + ", " + ip_address + ", " + detail)
         return history_with_duration
 
 
