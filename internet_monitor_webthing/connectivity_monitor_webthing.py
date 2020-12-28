@@ -1,6 +1,5 @@
 from webthing import Property, Thing, Value
-from connectivity_monitor import ConnectionInfo, ConnectionLog, ConnectionTester
-from typing import List
+from internet_monitor_webthing.connectivity_monitor import ConnectionInfo, ConnectionLog, ConnectionTester
 import tornado.ioloop
 
 

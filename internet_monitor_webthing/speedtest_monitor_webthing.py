@@ -1,5 +1,5 @@
 from webthing import (Property, Thing, Value, Action)
-from speedtest_monitor import SpeedtestRunner, Speed
+from internet_monitor_webthing.speedtest_monitor import SpeedtestRunner, Speed
 from datetime import datetime
 import tornado.ioloop
 import uuid
