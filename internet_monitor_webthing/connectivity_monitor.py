@@ -123,25 +123,3 @@ class ConnectionTester:
             except Exception as e:
                 logging.error(e)
             time.sleep(measure_period_sec)
-
-
-
-log = ConnectionLog("c:\\temp\\test.p")
-print(log.filename)
-
-log.append(ConnectionInfo(datetime.strptime("2020-12-28 14:22:12.17512", '%Y-%m-%d %H:%M:%S.%f'), True, "75.45.2.1"))
-log.append(ConnectionInfo(datetime.strptime("2020-12-28 15:3:13.17512", '%Y-%m-%d %H:%M:%S.%f'), False, ""))
-log.append(ConnectionInfo(datetime.strptime("2020-12-28 16:3:13.17512", '%Y-%m-%d %H:%M:%S.%f'), True, ""))
-log.append(ConnectionInfo(datetime.strptime("2020-12-28 17:3:13.17512", '%Y-%m-%d %H:%M:%S.%f'), True, "54.5.3.2"))
-log.append(ConnectionInfo(datetime.strptime("2020-12-28 18:3:13.17512", '%Y-%m-%d %H:%M:%S.%f'), False, ""))
-log.append(ConnectionInfo(datetime.strptime("2020-12-28 18:13:09.17512", '%Y-%m-%d %H:%M:%S.%f'), True, "45.3.3.2"))
-log.append(ConnectionInfo(datetime.strptime("2020-12-28 20:3:13.17512", '%Y-%m-%d %H:%M:%S.%f'), True, "122.4.3.2"))
-
-
-print("\nall")
-for entry in log.entries:
-    print(entry)
-
-print("\nreport")
-for entry in log.to_report():
-    print(entry)
