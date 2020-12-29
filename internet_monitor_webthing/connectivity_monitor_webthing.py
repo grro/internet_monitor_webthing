@@ -96,7 +96,8 @@ class InternetConnectivityMonitorWebthing(Thing):
                      }))
 
         self.ioloop = tornado.ioloop.IOLoop.current()
-        ConnectionTester(self.history).listen(self.__connection_state_updated, self.testperiod.get(), self.test_url.get())
+        self.tester = ConnectionTester(self.history)
+        self.tester.listen(self.__connection_state_updated, self.testperiod.get(), self.test_url.get())
 
     def __connection_state_updated(self, connection_info: ConnectionInfo):
         self.ioloop.add_callback(self.__update_connected_props, connection_info)
@@ -105,4 +106,3 @@ class InternetConnectivityMonitorWebthing(Thing):
         self.internet_connected.notify_of_external_update(connection_info.is_connected)
         self.ip_address.notify_of_external_update(connection_info.ip_address)
         self.connection_history.notify_of_external_update(self.history.to_report())
-        self.testdate.notify_of_external_update(self.history.newest_entry().date.strftime("%Y-%m-%d %H:%M:%S"))

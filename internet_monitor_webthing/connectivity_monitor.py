@@ -45,9 +45,6 @@ class ConnectionLog:
         except Exception as e:
             logging.error(e)
 
-    def newest_entry(self) -> ConnectionInfo:
-        return self.entries.pop()
-
     def print_duration(self, duration: int):
         if duration > (60 * 60):
             return "{0:.1f} h".format(duration/(60*60))
