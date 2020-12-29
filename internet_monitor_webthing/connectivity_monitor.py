@@ -83,6 +83,7 @@ class IpAddressResolver:
 
     def invalidate_cache(self):
         self.cache_time = datetime.fromtimestamp(555)
+        logging.info('ip address cache invalidated')
 
     def get_internet_address(self, max_cache_ttl: int = 60) -> str:
         try:
@@ -92,6 +93,7 @@ class IpAddressResolver:
                 if (response.status_code >= 200) and (response.status_code < 300):
                     self.cache_ip_address = response.text
                     self.cache_time = now
+                    logging.info('ip address resolved ' + self.cache_ip_address)
             return self.cache_ip_address
         except Exception as e:
             return ""
@@ -108,11 +110,13 @@ class IpInfo:
             if (datetime.now() - self.cached_invalidation_time).seconds > (4 * 24 * 60 * 60):
                 self.cache = dict()
                 self.cached_invalidation_time = datetime.now()
+                logging.info('ip info cache invalidated')
             if ip not in self.cache.keys():
                 response = requests.get('https://tools.keycdn.com/geo.json?host=' + ip, timeout=60)
                 if (response.status_code >= 200) and (response.status_code < 300):
                     data = response.json()
                     self.cache[ip] = data['data']['geo']['isp']
+                    logging.info('ip info fetched ' + ip + ":" + self.cache[ip])
             return self.cache.get(ip, "")
         except Exception as e:
             return ""
