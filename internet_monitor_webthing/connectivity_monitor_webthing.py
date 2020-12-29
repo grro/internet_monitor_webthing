@@ -83,18 +83,6 @@ class InternetConnectivityMonitorWebthing(Thing):
                          'readOnly': True,
                      }))
 
-        self.testdate = Value("")
-        self.add_property(
-            Property(self,
-                     'last_test',
-                     self.testdate,
-                     metadata={
-                         'title': 'Last executed test date',
-                         'type': 'string',
-                         'description': 'The date of the last successfully executed test (iso 8601 string)',
-                         'readOnly': True,
-                     }))
-
         self.connection_history = Value("")
         self.add_property(
             Property(self,
