@@ -105,7 +105,7 @@ class ConnectionTester:
 
     def measure(self, test_uri) -> ConnectionInfo:
         try:
-            requests.get(test_uri) # test call
+            requests.get(test_uri, timeout=5) # test call
             ip_address = self.address_resolver.get_internet_address(60)
             return ConnectionInfo(datetime.now(), True, ip_address)
         except:
@@ -116,10 +116,16 @@ class ConnectionTester:
         while True:
             try:
                 connected_info = self.measure(test_uri)
-                if previous_connection_info is None or  connected_info.is_connected != previous_connection_info.is_connected or connected_info.ip_address != previous_connection_info.ip_address:
+                if previous_connection_info is None or self.is_connect_state_changed(connected_info, previous_connection_info) or self.is_ip_address_state_changed(connected_info, previous_connection_info):
                     self.connection_log.append(connected_info)
                     listener(connected_info)
-                previous_connection_info = connected_info
+                    previous_connection_info = connected_info
             except Exception as e:
                 logging.error(e)
             time.sleep(measure_period_sec)
+
+    def is_connect_state_changed(self, current: ConnectionInfo, previous: ConnectionInfo):
+       return current.is_connected != previous.is_connected
+
+    def is_ip_address_state_changed(self, current: ConnectionInfo, previous: ConnectionInfo):
+        return current.ip_address != previous.ip_address
