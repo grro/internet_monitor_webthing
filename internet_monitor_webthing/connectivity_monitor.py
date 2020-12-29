@@ -20,7 +20,7 @@ class ConnectionLog:
 
     def __init__(self, filename:str = None):
         if filename is None:
-            dir = os.path.join("var", "lib", "netmonitor0")
+            dir = os.path.join("var", "lib", "netmonitor")
             os.makedirs(dir, exist_ok=True)
             self.filename = os.path.join(dir, "log.p")
         else:
