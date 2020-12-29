@@ -83,6 +83,42 @@ class InternetConnectivityMonitorWebthing(Thing):
                          'readOnly': True,
                      }))
 
+        self.latitude = Value("")
+        self.add_property(
+            Property(self,
+                     'latitude',
+                     self.latitude,
+                     metadata={
+                         'title': 'latitude',
+                         'type': 'string',
+                         'description': 'The resolve latitude regarding the ip address',
+                         'readOnly': True,
+                     }))
+
+        self.longitude = Value("")
+        self.add_property(
+            Property(self,
+                     'longitude',
+                     self.longitude,
+                     metadata={
+                         'title': 'longitude',
+                         'type': 'string',
+                         'description': 'The resolve longitude regarding the ip address',
+                         'readOnly': True,
+                     }))
+
+        self.city = Value("")
+        self.add_property(
+            Property(self,
+                     'city',
+                     self.city,
+                     metadata={
+                         'title': 'city',
+                         'type': 'string',
+                         'description': 'The resolve city regarding the ip address',
+                         'readOnly': True,
+                     }))
+
         self.connection_history = Value("")
         self.add_property(
             Property(self,
@@ -105,5 +141,8 @@ class InternetConnectivityMonitorWebthing(Thing):
     def __update_connected_props(self, connection_info: ConnectionInfo):
         self.internet_connected.notify_of_external_update(connection_info.is_connected)
         self.ip_address.notify_of_external_update(connection_info.ip_address)
-        self.isp.notify_of_external_update(connection_info.isp)
+        self.isp.notify_of_external_update(connection_info.ip_info['isp'])
+        self.longitude.notify_of_external_update(connection_info.ip_info['longitude'])
+        self.latitude.notify_of_external_update(connection_info.ip_info['latitude'])
+        self.city.notify_of_external_update(connection_info.ip_info['city'])
         self.connection_history.notify_of_external_update(self.history.to_report())

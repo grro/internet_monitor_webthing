@@ -1,6 +1,6 @@
 from datetime import datetime
 from dataclasses import dataclass
-from typing import List
+from typing import List, Dict
 import logging
 import time
 import requests
@@ -13,16 +13,16 @@ class ConnectionInfo:
     date: datetime
     is_connected: bool
     ip_address: str
-    isp: str
+    ip_info: Dict[str, str]
 
 
 class ConnectionLog:
 
     def __init__(self, filename:str = None):
         if filename is None:
-            dir = os.path.join("var", "lib", "netmonitor")
+            dir = os.path.join("var", "lib", "netmonitor0")
             os.makedirs(dir, exist_ok=True)
-            self.filename = os.path.join(dir, "history.p")
+            self.filename = os.path.join(dir, "log.p")
         else:
             self.filename = filename
 
@@ -68,7 +68,7 @@ class ConnectionLog:
                         detail = "reconnected after " + self.print_duration(elapsed_sec)
                     elif len(entry.ip_address) > 0 and len(previous_entry.ip_address) > 0 and entry.ip_address != previous_entry.ip_address:
                         detail = "ip address updated"
-                report.append(entry.date.strftime("%Y-%m-%d %H:%M:%S") + ", " + status + ", " + entry.ip_address + ", " + entry.isp + ", " + detail)
+                report.append(entry.date.strftime("%Y-%m-%d %H:%M:%S") + ", " + status + ", " + entry.ip_address + ", " + entry.ip_info['isp'] + ", " + detail)
                 previous_entry = entry
             except Exception as e:
                 print(e)
@@ -97,25 +97,34 @@ class IpAddressResolver:
 
 class IpInfo:
 
+    EMPTY_INFO = { 'isp': '',
+                   'city' : '',
+                   'latitude' : '',
+                   'longitude' : '' }
+
     def __init__(self):
         self.cache= dict()
         self.cached_invalidation_time = datetime.fromtimestamp(555)
 
-    def get_ip_info(self, ip: str) -> str:
+    def get_ip_info(self, ip: str) -> Dict[str, str]:
         try:
-            if (datetime.now() - self.cached_invalidation_time).seconds > (4 * 24 * 60 * 60):
+            if (datetime.now() - self.cached_invalidation_time).seconds > (5 * 24 * 60 * 60):
                 self.cache = dict()
                 self.cached_invalidation_time = datetime.now()
                 logging.info('ip info cache invalidated')
             if ip not in self.cache.keys():
-                response = requests.get('https://tools.keycdn.com/geo.json?host=' + ip, timeout=60)
+                response = requests.get('https://tools.keycdn.com/geo.json?host=' + ip, timeout=60, verify=False)
                 if (response.status_code >= 200) and (response.status_code < 300):
                     data = response.json()
-                    self.cache[ip] = data['data']['geo']['isp']
-                    logging.info('ip info fetched ' + ip + ":" + self.cache[ip])
-            return self.cache.get(ip, "")
+                    self.cache[ip] = { 'isp': data['data']['geo'].get('isp', ''),
+                                       'city' : data['data']['geo'].get('city', ''),
+                                       'latitude' : str(data['data']['geo'].get('latitude', '')),
+                                       'longitude' : str(data['data']['geo'].get('longitude', '')),
+                                       }
+                    logging.info('ip info fetched ' + ip + ":" + str(self.cache[ip]))
+            return self.cache.get(ip, IpInfo.EMPTY_INFO)
         except Exception as e:
-            return ""
+            return IpInfo.EMPTY_INFO
 
 
 class ConnectionTester:
@@ -132,10 +141,10 @@ class ConnectionTester:
         try:
             requests.get(test_uri, timeout=7) # test call
             ip_address = self.address_resolver.get_internet_address(max_cache_ttl)
-            isp = self.ip_info.get_ip_info(ip_address)
-            return ConnectionInfo(datetime.now(), True, ip_address, isp)
+            ip_info = self.ip_info.get_ip_info(ip_address)
+            return ConnectionInfo(datetime.now(), True, ip_address, ip_info)
         except:
-            return ConnectionInfo(datetime.now(), False, "", "")
+            return ConnectionInfo(datetime.now(), False, "", IpInfo.EMPTY_INFO)
 
     def __measure_periodically(self, measure_period_sec: int, test_uri: str, listener):
         previous_connection_info = None
