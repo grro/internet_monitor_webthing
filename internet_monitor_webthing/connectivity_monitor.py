@@ -78,11 +78,9 @@ class ConnectionLog:
 class IpAddressResolver:
 
     def __init__(self):
-        self.cache_ip_address = ""
         self.cache_time = datetime.fromtimestamp(555)
 
-    def __invalidate_cache(self):
-        self.cache_ip_address = ""
+    def invalidate_cache(self):
         self.cache_time = datetime.fromtimestamp(555)
 
     def get_internet_address(self, max_cache_ttl: int = 60) -> str:
@@ -104,17 +102,13 @@ class IpInfo:
         self.cache= dict()
         self.cached_invalidated_time = datetime.fromtimestamp(555)
 
-    def __invalidate_cache(self):
-        self.cache = dict()
-        self.cached_invalidated_time = datetime.now()
-
     def get_ip_info(self, ip: str) -> str:
         try:
             if (datetime.now() - self.cached_invalidated_time).seconds > (4 * 24 * 60 * 60):
                 self.cache = dict()
                 self.cached_invalidated_time = datetime.now()
             if ip not in self.cache.keys():
-                response = requests.get('https://tools.keycdn.com/geo.json?host=' + ip, timeout=10)
+                response = requests.get('https://tools.keycdn.com/geo.json?host=' + ip, timeout=60)
                 if (response.status_code >= 200) and (response.status_code < 300):
                     data = response.json()
                     self.cache[ip] = data['data']['geo']['isp']
@@ -136,10 +130,11 @@ class ConnectionTester:
     def measure(self, test_uri) -> ConnectionInfo:
         try:
             requests.get(test_uri, timeout=7) # test call
-            ip_address = self.address_resolver.get_internet_address(60)
+            ip_address = self.address_resolver.get_internet_address(max_cache_ttl=112)
             isp = self.ip_info.get_ip_info(ip_address)
             return ConnectionInfo(datetime.now(), True, ip_address, isp)
         except:
+            self.address_resolver.invalidate_cache()
             return ConnectionInfo(datetime.now(), False, "", "")
 
     def __measure_periodically(self, measure_period_sec: int, test_uri: str, listener):
