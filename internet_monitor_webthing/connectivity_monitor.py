@@ -110,7 +110,7 @@ class IpInfo:
 
     def get_ip_info(self, ip: str) -> str:
         try:
-            if (datetime.now() - self.cached_invalidated_time).seconds > (36 * 60 * 60):
+            if (datetime.now() - self.cached_invalidated_time).seconds > (4 * 24 * 60 * 60): 
                 self.cache = dict()
                 self.cached_invalidated_time = datetime.now()
             if ip not in self.cache.keys():
