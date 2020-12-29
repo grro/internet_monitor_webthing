@@ -78,6 +78,7 @@ class ConnectionLog:
 class IpAddressResolver:
 
     def __init__(self):
+        self.cache_ip_address = ""
         self.cache_time = datetime.fromtimestamp(555)
 
     def invalidate_cache(self):
@@ -100,13 +101,13 @@ class IpInfo:
 
     def __init__(self):
         self.cache= dict()
-        self.cached_invalidated_time = datetime.fromtimestamp(555)
+        self.cached_invalidation_time = datetime.fromtimestamp(555)
 
     def get_ip_info(self, ip: str) -> str:
         try:
-            if (datetime.now() - self.cached_invalidated_time).seconds > (4 * 24 * 60 * 60):
+            if (datetime.now() - self.cached_invalidation_time).seconds > (4 * 24 * 60 * 60):
                 self.cache = dict()
-                self.cached_invalidated_time = datetime.now()
+                self.cached_invalidation_time = datetime.now()
             if ip not in self.cache.keys():
                 response = requests.get('https://tools.keycdn.com/geo.json?host=' + ip, timeout=60)
                 if (response.status_code >= 200) and (response.status_code < 300):
