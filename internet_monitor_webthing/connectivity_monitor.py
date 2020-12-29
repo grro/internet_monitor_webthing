@@ -81,14 +81,10 @@ class IpAddressResolver:
         self.cache_ip_address = ""
         self.cache_time = datetime.fromtimestamp(555)
 
-    def invalidate_cache(self):
-        self.cache_time = datetime.fromtimestamp(555)
-        logging.info('ip address cache invalidated')
-
-    def get_internet_address(self, max_cache_ttl: int = 60) -> str:
+    def get_internet_address(self, max_cache_ttl: int = 0) -> str:
         try:
             now = datetime.now()
-            if (now - self.cache_time).seconds > max_cache_ttl:
+            if max_cache_ttl == 0 or (now - self.cache_time).seconds > max_cache_ttl:
                 response = requests.get('http://whatismyip.akamai.com/', timeout=10)
                 if (response.status_code >= 200) and (response.status_code < 300):
                     self.cache_ip_address = response.text
@@ -132,21 +128,23 @@ class ConnectionTester:
     def listen(self, listener, measure_period_sec, test_uri: str = "http://google.com"):
         threading.Thread(target=self.__measure_periodically, args=(measure_period_sec, test_uri, listener), daemon=True).start()
 
-    def measure(self, test_uri) -> ConnectionInfo:
+    def measure(self, test_uri, max_cache_ttl: int) -> ConnectionInfo:
         try:
             requests.get(test_uri, timeout=7) # test call
-            ip_address = self.address_resolver.get_internet_address(max_cache_ttl=112)
+            ip_address = self.address_resolver.get_internet_address(max_cache_ttl)
             isp = self.ip_info.get_ip_info(ip_address)
             return ConnectionInfo(datetime.now(), True, ip_address, isp)
         except:
-            self.address_resolver.invalidate_cache()
             return ConnectionInfo(datetime.now(), False, "", "")
 
     def __measure_periodically(self, measure_period_sec: int, test_uri: str, listener):
         previous_connection_info = None
         while True:
             try:
-                connected_info = self.measure(test_uri)
+                if previous_connection_info is None or not previous_connection_info.is_connected:
+                    connected_info = self.measure(test_uri, max_cache_ttl=0)
+                else:
+                    connected_info = self.measure(test_uri, max_cache_ttl=112)
                 if previous_connection_info is None or self.is_connect_state_changed(connected_info, previous_connection_info) or self.is_ip_address_state_changed(connected_info, previous_connection_info):
                     self.connection_log.append(connected_info)
                     listener(connected_info)
