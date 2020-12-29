@@ -71,6 +71,18 @@ class InternetConnectivityMonitorWebthing(Thing):
                          'readOnly': True,
                      }))
 
+        self.isp = Value("")
+        self.add_property(
+            Property(self,
+                     'isp',
+                     self.isp,
+                     metadata={
+                         'title': 'Internet service provider',
+                         'type': 'string',
+                         'description': 'The name of the internet service provider providing the public WAN IP address ',
+                         'readOnly': True,
+                     }))
+
         self.testdate = Value("")
         self.add_property(
             Property(self,
@@ -105,4 +117,5 @@ class InternetConnectivityMonitorWebthing(Thing):
     def __update_connected_props(self, connection_info: ConnectionInfo):
         self.internet_connected.notify_of_external_update(connection_info.is_connected)
         self.ip_address.notify_of_external_update(connection_info.ip_address)
+        self.isp.notify_of_external_update(connection_info.isp)
         self.connection_history.notify_of_external_update(self.history.to_report())
