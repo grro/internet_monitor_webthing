@@ -19,7 +19,7 @@ class ConnectionLog:
 
     def __init__(self, filename:str = None):
         if filename is None:
-            dir = os.path.join("var", "lib", "netmonitor3")
+            dir = os.path.join("var", "lib", "netmonitor")
             os.makedirs(dir, exist_ok=True)
             self.filename = os.path.join(dir, "history.p")
         else:
@@ -45,6 +45,9 @@ class ConnectionLog:
         except Exception as e:
             logging.error(e)
 
+    def newest_entry(self) -> ConnectionInfo:
+        return self.entries.pop()
+
     def print_duration(self, duration: int):
         if duration > (60 * 60):
             return "{0:.1f} h".format(duration/(60*60))
@@ -58,16 +61,19 @@ class ConnectionLog:
 
         previous_entry = None
         for entry in self.entries:
-            status = "connected" if entry.is_connected else "disconnected"
-            detail = ""
-            if previous_entry is not None:
-                elapsed_sec = int((entry.date - previous_entry.date).total_seconds())
-                if entry.is_connected and not previous_entry.is_connected:
-                    detail = "reconnected after " + self.print_duration(elapsed_sec)
-                elif len(entry.ip_address) > 0 and len(previous_entry.ip_address) > 0 and entry.ip_address != previous_entry.ip_address:
-                    detail = "ip address updated"
-            report.append(entry.date.strftime("%Y-%m-%d %H:%M:%S") + ", " + status + ", " + entry.ip_address + ", " + detail)
-            previous_entry = entry
+            try:
+                status = "connected" if entry.is_connected else "disconnected"
+                detail = ""
+                if previous_entry is not None:
+                    elapsed_sec = int((entry.date - previous_entry.date).total_seconds())
+                    if entry.is_connected and not previous_entry.is_connected:
+                        detail = "reconnected after " + self.print_duration(elapsed_sec)
+                    elif len(entry.ip_address) > 0 and len(previous_entry.ip_address) > 0 and entry.ip_address != previous_entry.ip_address:
+                        detail = "ip address updated"
+                report.append(entry.date.strftime("%Y-%m-%d %H:%M:%S") + ", " + status + ", " + entry.ip_address + ", " + detail)
+                previous_entry = entry
+            except Exception as e:
+                print(e)
         return report
 
 
