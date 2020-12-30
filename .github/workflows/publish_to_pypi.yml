@@ -34,7 +34,7 @@ jobs:
       - name: build docker image
         run: |
           docker buildx build -t grro/internet-monitorlatest --platform linux/amd64,linux/arm/v7,linux/arm64 .
-          docker buildx image ls
+          docker buildx inspect     
       - name:  Publish distribution 📦 to PyPI
         if: startsWith(github.ref, 'refs/tags')
         uses: pypa/gh-action-pypi-publish@master
