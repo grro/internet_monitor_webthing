@@ -113,7 +113,7 @@ class IpInfo:
                 self.cached_invalidation_time = datetime.now()
                 logging.info('ip info cache invalidated')
             if ip not in self.cache.keys():
-                response = requests.get('https://tools.keycdn.com/geo.json?host=' + ip, timeout=60, verify=False)
+                response = requests.get('https://tools.keycdn.com/geo.json?host=' + ip, timeout=60)
                 if (response.status_code >= 200) and (response.status_code < 300):
                     data = response.json()
                     self.cache[ip] = { 'isp': data['data']['geo'].get('isp', ''),

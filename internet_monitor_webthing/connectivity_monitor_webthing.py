@@ -107,15 +107,15 @@ class InternetConnectivityMonitorWebthing(Thing):
                          'readOnly': True,
                      }))
 
-        self.city = Value("")
+        self.location_uri = Value("")
         self.add_property(
             Property(self,
-                     'city',
-                     self.city,
+                     'location_uri',
+                     self.location_uri,
                      metadata={
-                         'title': 'city',
+                         'title': 'location_uri',
                          'type': 'string',
-                         'description': 'The resolve city regarding the ip address',
+                         'description': 'The resolve location regarding the ip address',
                          'readOnly': True,
                      }))
 
@@ -142,7 +142,9 @@ class InternetConnectivityMonitorWebthing(Thing):
         self.internet_connected.notify_of_external_update(connection_info.is_connected)
         self.ip_address.notify_of_external_update(connection_info.ip_address)
         self.isp.notify_of_external_update(connection_info.ip_info['isp'])
-        self.longitude.notify_of_external_update(connection_info.ip_info['longitude'])
-        self.latitude.notify_of_external_update(connection_info.ip_info['latitude'])
-        self.city.notify_of_external_update(connection_info.ip_info['city'])
+        longitude = connection_info.ip_info['longitude']
+        latitude = connection_info.ip_info['latitude']
+        self.longitude.notify_of_external_update(longitude)
+        self.latitude.notify_of_external_update(latitude)
+        self.location_uri.notify_of_external_update('https://www.google.com/maps/search/?api=1&query='+ latitude + ',' + longitude)
         self.connection_history.notify_of_external_update(self.history.to_report())
