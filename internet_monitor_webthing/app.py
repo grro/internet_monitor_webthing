@@ -30,7 +30,7 @@ class App(ABC):
         if msg is not None:
             print(msg + "\n")
 
-        if hostname is None:
+        if hostname is None or len(hostname) < 1:
             hostname = "192.168.0.23"
         if port is None:
             port = "9496"
