@@ -29,6 +29,11 @@ jobs:
         run: |
           python setup.py sdist bdist_wheel
           ls dist
+      - name: build the image
+        run: |
+          docker buildx build \
+            --tag grro/internet-monitor:latest \
+            --platform linux/amd64,linux/arm/v7,linux/arm64 .
       - name:  Publish distribution 📦 to PyPI
         if: startsWith(github.ref, 'refs/tags')
         uses: pypa/gh-action-pypi-publish@master
