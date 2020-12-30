@@ -36,7 +36,8 @@ setup(
     ],
     install_requires=[
         'webthing',
-        'speedtest-cli'
+        'speedtest-cli',
+        'requests'
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
