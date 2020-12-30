@@ -38,7 +38,6 @@ class InternetConnectivityMonitorWebthing(Thing):
                      'test_url',
                      self.test_url,
                      metadata={
-                         '@type': 'Name',
                          'title': 'Internet connection test url',
                          "type": "string",
                          'description': 'The url to connect',
@@ -125,9 +124,9 @@ class InternetConnectivityMonitorWebthing(Thing):
                      'connection_history',
                      self.connection_history,
                      metadata={
-                         'title': 'Availability report',
+                         'title': 'Connection log',
                          'type': 'array',
-                         'description': 'The availability report',
+                         'description': 'The connection log',
                          'readOnly': True,
                      }))
 
