@@ -12,5 +12,8 @@ RUN rm -r /usr/lib/python*/ensurepip
 RUN pip3 install --no-cache --upgrade pip setuptools wheel
 RUN if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi
 COPY dist/*.whl .
-RUN pip3 install internet-monitor-webthing
+RUN ls
+RUN python3 -m pip install *.whl
+RUN ls
+
 CMD netmonitor --command listen --hostname $hostname --port $port --speedtest_period $speedtest_period --connecttest_period $connecttest_period
