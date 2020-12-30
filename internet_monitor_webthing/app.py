@@ -52,7 +52,7 @@ class App(ABC):
         parser = argparse.ArgumentParser(description=self.description)
         parser.add_argument('--command', metavar='command', required=False, type=str, help='the command. Supported commands are: listen (run the webthing service), register (register and starts the webthing service as a systemd unit, deregister (deregisters the systemd unit), log (prints the log)')
         parser.add_argument('--port', metavar='port', required=False, type=int, help='the port of the webthing serivce')
-        parser.add_argument('--hostname', metavar='hostname', required=False, type=str, help='the hostname of the webthing serivce')
+        parser.add_argument('--hostname', metavar='hostname', required=False, default="", type=str, help='the hostname of the webthing serivce')
         parser.add_argument('--verbose', metavar='verbose', required=False, type=bool, default=False, help='activates verbose output')
         self.do_add_argument(parser)
         args = parser.parse_args()
@@ -66,16 +66,12 @@ class App(ABC):
         if args.command is None:
             self.print_usage_info(args.hostname, str(args.port))
         elif args.command == 'deregister':
-            if args.hostname is None:
-                self.print_usage_info(args.hostname, str(args.port), "--hostname is mandatory for deregister command")
-            elif args.port is None:
+            if args.port is None:
                 self.print_usage_info(args.hostname, str(args.port), "--port is mandatory for deregister command")
             else:
                 self.unit.deregister(args.hostname, int(args.port))
         elif args.command == 'log':
-            if args.hostname is None:
-                self.print_usage_info(args.hostname, str(args.port), "--hostname is mandatory for log command")
-            elif args.port is None:
+            if args.port is None:
                 self.print_usage_info(args.hostname, str(args.port), "--port is mandatory for log command")
             else:
                 self.unit.printlog(args.hostname, int(args.port))

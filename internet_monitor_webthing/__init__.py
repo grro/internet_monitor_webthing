@@ -14,7 +14,7 @@ After=syslog.target
 
 [Service]
 Type=simple
-ExecStart=$entrypoint --command listen --hostname $hostname --port $port --verbose $verbose --speedtest_period $speedtest_period --connecttest_period $connecttest_period --connecttest_url $connecttest_url
+ExecStart=$entrypoint --command listen $hostnameentry --port $port --verbose $verbose --speedtest_period $speedtest_period --connecttest_period $connecttest_period --connecttest_url $connecttest_url
 SyslogIdentifier=$packagename
 StandardOutput=syslog
 StandardError=syslog
@@ -43,7 +43,11 @@ class InternetApp(App):
             return True
         elif args.command == 'register' and (args.speedtest_period > 0 or args.connecttest_period > 0):
             print("register " + self.packagename + " on port " + str(args.port) + " with speedtest_period " + str(args.speedtest_period) + "sec and connecttest_period " + str(args.connecttest_period) + "sec")
-            unit = UNIT_TEMPLATE.substitute(packagename=self.packagename, entrypoint=self.entrypoint, hostname=hostname, port=port, verbose=verbose, speedtest_period=args.speedtest_period, connecttest_period=args.connecttest_period, connecttest_url=args.connecttest_url)
+            if len(hostname) > 0:
+                hostnameentry = "--hostname " + hostname
+            else:
+                hostnameentry = ""
+            unit = UNIT_TEMPLATE.substitute(packagename=self.packagename, entrypoint=self.entrypoint, hostnameentry=hostnameentry, port=port, verbose=verbose, speedtest_period=args.speedtest_period, connecttest_period=args.connecttest_period, connecttest_url=args.connecttest_url)
             self.unit.register(hostname, port, unit)
             return True
         else:

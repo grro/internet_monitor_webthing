@@ -13,9 +13,13 @@ def run_server(hostname: str, port: int, description: str, speedtest_period: int
 
     if len(services) > 0:
         print("running Internet " + ", ".join([service.get_title() for service in services]) + " on " + hostname + ":" + str(port))
-        server = WebThingServer(MultipleThings(services, "Internet Monitor"), hostname=hostname, port=port)
+        if len(hostname) > 0:
+            server = WebThingServer(MultipleThings(services, "Internet Monitor"), hostname=hostname, port=port)
+        else:
+            server = WebThingServer(MultipleThings(services, "Internet Monitor"), port=port)
         try:
             logging.info('starting the server')
+            logging.info("hosts: " + ", ".join(server.hosts))
             server.start()
         except KeyboardInterrupt:
             logging.info('stopping the server')
