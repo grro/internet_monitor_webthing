@@ -30,7 +30,6 @@ class ConnectionLog:
             with open(self.filename, "rb") as file:
                 self.entries = pickle.load(file)
         except Exception as e:
-            logging.error(e)
             self.entries = list()
 
     def append(self, connection_info : ConnectionInfo):
