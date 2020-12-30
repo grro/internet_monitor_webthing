@@ -28,9 +28,11 @@ jobs:
       - name: Build and publish
         run: |
           python setup.py sdist bdist_wheel
+      - name: Get the version
+        id: get_version
+        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
       - name: build docker image
         run: |
-          echo "GIT_TAG=`echo $(git describe --tags --abbrev=0)`"
           docker buildx build -t grro/internet-monitorlatest --platform linux/amd64,linux/arm/v7,linux/arm64 .
           docker buildx image ls
       - name:  Publish distribution 📦 to PyPI
