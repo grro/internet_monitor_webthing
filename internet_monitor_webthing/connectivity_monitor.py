@@ -152,7 +152,7 @@ class ConnectionTester:
                 if previous_connection_info is None or not previous_connection_info.is_connected:
                     connected_info = self.measure(test_uri, max_cache_ttl=0)
                 else:
-                    connected_info = self.measure(test_uri, max_cache_ttl=112)
+                    connected_info = self.measure(test_uri, max_cache_ttl=4 * 60)
                 if previous_connection_info is None or self.is_connect_state_changed(connected_info, previous_connection_info) or self.is_ip_address_state_changed(connected_info, previous_connection_info):
                     self.connection_log.append(connected_info)
                     listener(connected_info)

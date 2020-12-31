@@ -31,7 +31,8 @@ curl http://192.168.0.23:8433/1/properties
 }
 ```
 
-To install this software you may use [PIP](https://realpython.com/what-is-pip/) package manager such as shown below
+To run this software you may use [PIP](https://realpython.com/what-is-pip/) package manager such as shown below
+
 ```
 sudo pip install internet_monitor_webthing
 ```
