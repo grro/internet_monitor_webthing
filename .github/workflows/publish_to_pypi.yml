@@ -38,5 +38,9 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: build docker image
-        run: |
-          docker buildx build -t grro/internet-monitor:latest --push --platform linux/amd64,linux/arm/v7,linux/arm64 .
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          platforms: linux/amd64,linux/arm/v7,linux/arm64
+          tags: grro/internet-monitor:latest
