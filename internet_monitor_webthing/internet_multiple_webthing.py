@@ -19,7 +19,7 @@ def run_server(hostname: str, port: int, description: str, speedtest_period: int
             server = WebThingServer(MultipleThings(services, "Internet Monitor"), port=port)
         try:
             logging.info('starting the server')
-            logging.info("hosts: " + ", ".join(server.hosts))
+            logging.info("supported host headers: " + ", ".join(server.hosts))
             server.start()
         except KeyboardInterrupt:
             logging.info('stopping the server')
