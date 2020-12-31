@@ -84,7 +84,7 @@ class IpAddressResolver:
         try:
             now = datetime.now()
             if max_cache_ttl == 0 or (now - self.cache_time).seconds > max_cache_ttl:
-                response = requests.get('http://whatismyip.akamai.com/', timeout=10)
+                response = requests.get('http://whatismyip.akamai.com/', timeout=60)
                 if (response.status_code >= 200) and (response.status_code < 300):
                     self.cache_ip_address = response.text
                     self.cache_time = now
@@ -138,7 +138,7 @@ class ConnectionTester:
 
     def measure(self, test_uri, max_cache_ttl: int) -> ConnectionInfo:
         try:
-            requests.get(test_uri, timeout=7) # test call
+            requests.get(test_uri, timeout=10) # test call
             ip_address = self.address_resolver.get_internet_address(max_cache_ttl)
             ip_info = self.ip_info.get_ip_info(ip_address)
             return ConnectionInfo(datetime.now(), True, ip_address, ip_info)
