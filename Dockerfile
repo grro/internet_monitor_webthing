@@ -10,4 +10,4 @@ RUN  python /tmp/setup.py install
 WORKDIR /
 RUN rm -r /tmp/
 
-CMD netmonitor --command listen --port $port --speedtest_period $speedtest_period --connecttest_period $connecttest_period
+CMD netmonitor --command listen --hostname $hostname --port $port --speedtest_period $speedtest_period --connecttest_period $connecttest_period
