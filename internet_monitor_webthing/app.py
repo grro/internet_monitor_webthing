@@ -38,15 +38,19 @@ class App(ABC):
         print("for command options usage")
         print(" sudo " + self.entrypoint + " --help")
         print("example commands")
-        print(" sudo " + self.entrypoint + " --command register --hostname " + hostname + " --port " + port + " " + self.do_additional_listen_example_params())
-        print(" sudo " + self.entrypoint + " --command listen --hostname " + hostname + " --port " + port + " " + self.do_additional_listen_example_params())
+
+        hostname_param = ""
+        if len(hostname) > 0:
+            hostname_param = "--hostname " + hostname
+        print(" sudo " + self.entrypoint + " --command register " + hostname_param + " --port " + port + " " + self.do_additional_listen_example_params())
+        print(" sudo " + self.entrypoint + " --command listen " + hostname_param + " --port " + port + " " + self.do_additional_listen_example_params())
         if len(self.unit.list_installed()) > 0:
             print("example commands for registered services")
             for service_info in self.unit.list_installed():
                 host = service_info[1]
                 port = service_info[2]
-                print(" sudo " + self.entrypoint + " --command deregister --hostname " + host + " --port " + port)
-                print(" sudo " + self.entrypoint + " --command log --hostname " + host + " --port " + port)
+                print(" sudo " + self.entrypoint + " --command deregister " + hostname_param + " --port " + port)
+                print(" sudo " + self.entrypoint + " --command log " + hostname_param + " --port " + port)
 
     def handle_command(self):
         parser = argparse.ArgumentParser(description=self.description)
@@ -61,6 +65,7 @@ class App(ABC):
             log_level=logging.DEBUG
         else:
             log_level=logging.INFO
+        print("using log level " + str(log_level))
         logging.basicConfig(format='%(asctime)s %(name)-20s: %(levelname)-8s %(message)s', level=log_level, datefmt='%Y-%m-%d %H:%M:%S')
 
         if args.command is None:
