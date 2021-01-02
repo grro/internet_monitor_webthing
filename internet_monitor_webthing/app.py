@@ -29,27 +29,26 @@ class App(ABC):
         if msg is not None:
             print(msg + "\n")
 
-        hostname_param = ""
         if hostname is None or len(hostname.strip()) < 1:
             hostname_param = ""
         else:
-            hostname_param = "--hostname " + hostname
-        if port is None:
+            hostname_param = " --hostname " + hostname
+
+        if port is None or len(port.strip()) < 1:
             port = "9496"
 
         print("for command options usage")
         print(" sudo " + self.entrypoint + " --help")
         print("example commands")
-
-        print(" sudo " + self.entrypoint + " --command register " + hostname_param + " --port " + port + " " + self.do_additional_listen_example_params())
-        print(" sudo " + self.entrypoint + " --command listen " + hostname_param + " --port " + port + " " + self.do_additional_listen_example_params())
+        print(" sudo " + self.entrypoint + " --command register" + hostname_param + " --port " + port + " " + self.do_additional_listen_example_params())
+        print(" sudo " + self.entrypoint + " --command listen" + hostname_param + " --port " + port + " " + self.do_additional_listen_example_params())
         if len(self.unit.list_installed()) > 0:
             print("example commands for registered services")
             for service_info in self.unit.list_installed():
                 host = service_info[1]
                 port = service_info[2]
-                print(" sudo " + self.entrypoint + " --command deregister " + hostname_param + " --port " + port)
-                print(" sudo " + self.entrypoint + " --command log " + hostname_param + " --port " + port)
+                print(" sudo " + self.entrypoint + " --command deregister" + hostname_param + " --port " + port)
+                print(" sudo " + self.entrypoint + " --command log" + hostname_param + " --port " + port)
 
     def handle_command(self):
         parser = argparse.ArgumentParser(description=self.description)
