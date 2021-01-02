@@ -29,8 +29,11 @@ class App(ABC):
         if msg is not None:
             print(msg + "\n")
 
-        if hostname is None or len(hostname) < 1:
-            hostname = "192.168.0.23"
+        hostname_param = ""
+        if hostname is None or len(hostname.strip()) < 1:
+            hostname_param = ""
+        else:
+            hostname_param = "--hostname " + hostname
         if port is None:
             port = "9496"
 
@@ -38,9 +41,6 @@ class App(ABC):
         print(" sudo " + self.entrypoint + " --help")
         print("example commands")
 
-        hostname_param = ""
-        if len(hostname) > 0:
-            hostname_param = "--hostname " + hostname
         print(" sudo " + self.entrypoint + " --command register " + hostname_param + " --port " + port + " " + self.do_additional_listen_example_params())
         print(" sudo " + self.entrypoint + " --command listen " + hostname_param + " --port " + port + " " + self.do_additional_listen_example_params())
         if len(self.unit.list_installed()) > 0:
