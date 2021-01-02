@@ -1,7 +1,6 @@
 from os import system, remove
 from os import listdir
 from abc import ABC
-import socket
 import pathlib
 import logging
 import subprocess
