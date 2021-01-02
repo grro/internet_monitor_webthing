@@ -1,4 +1,4 @@
-FROM python:3.9.1-slim
+FROM python:3.9.1-alpine
 
 ENV port 8555
 ENV speedtest_period 900
