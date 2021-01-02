@@ -10,7 +10,8 @@ DESCRIPTION = "A web connected local internet speed and connectivity monitor"
 UNIT_TEMPLATE = Template('''
 [Unit]
 Description=$packagename
-After=syslog.target
+After=network-online.target
+Wants=network-online.target
 
 [Service]
 Type=simple
