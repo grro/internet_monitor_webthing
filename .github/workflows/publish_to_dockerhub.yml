@@ -1,4 +1,4 @@
-name: Python publish
+name: docker publish
 
 on:
   push:
