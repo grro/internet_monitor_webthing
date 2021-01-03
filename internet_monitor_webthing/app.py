@@ -40,8 +40,7 @@ class App(ABC):
         if len(self.unit.list_installed()) > 0:
             print("example commands for registered services")
             for service_info in self.unit.list_installed():
-                host = service_info[1]
-                port = service_info[2]
+                port = service_info[1]
                 print(" sudo " + self.entrypoint + " --command deregister --port " + port)
                 print(" sudo " + self.entrypoint + " --command log --port " + port)
 
