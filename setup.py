@@ -32,7 +32,7 @@ setup(
         ]
     },
     keywords=[
-        'webthings', 'home automation', 'speedtest', 'internet', 'local', 'raspberry', 'pi'
+        'webthings', 'home automation', 'speedtest', 'connectivity', 'internet', 'local', 'raspberry', 'pi'
     ],
     install_requires=[
         'webthing==0.15.0',
