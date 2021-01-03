@@ -8,7 +8,7 @@ import logging
 
 
 
-def run_server(hostname: str, port: int, description: str, speedtest_period: int, connecttest_period: int, connecttest_url: str):
+def run_server(port: int, description: str, speedtest_period: int, connecttest_period: int, connecttest_url: str):
     services = []
     if speedtest_period > 0:
         services.append(InternetSpeedMonitorWebthing(description, speedtest_period))
@@ -16,15 +16,10 @@ def run_server(hostname: str, port: int, description: str, speedtest_period: int
         services.append(InternetConnectivityMonitorWebthing(description, connecttest_period, connecttest_url))
 
     if len(services) > 0:
-        print("running Internet " + ", ".join([service.get_title() for service in services]) + " on " + hostname + ":" + str(port))
-        if len(hostname) > 0:
-            logging.info("using hostname: " + hostname)
-            server = WebThingServer(MultipleThings(services, "Internet Monitor"), hostname=hostname, port=port)
-        else:
-            server = WebThingServer(MultipleThings(services, "Internet Monitor"), port=port)
+        print("running Internet " + ", ".join([service.get_title() for service in services]) + " on port " + str(port))
+        server = WebThingServer(MultipleThings(services, "Internet Monitor"), port=port, disable_host_validation=True)
         try:
             logging.info('starting the server')
-            logging.info("supported host headers: " + str(server.hosts))
             server.start()
         except KeyboardInterrupt:
             logging.info('stopping the server')

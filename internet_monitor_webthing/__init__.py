@@ -15,7 +15,7 @@ Wants=network-online.target
 
 [Service]
 Type=simple
-ExecStart=$entrypoint --command listen $hostnameentry --port $port --verbose $verbose --speedtest_period $speedtest_period --connecttest_period $connecttest_period --connecttest_url $connecttest_url
+ExecStart=$entrypoint --command listen --port $port --verbose $verbose --speedtest_period $speedtest_period --connecttest_period $connecttest_period --connecttest_url $connecttest_url
 SyslogIdentifier=$packagename
 StandardOutput=syslog
 StandardError=syslog
@@ -38,18 +38,14 @@ class InternetApp(App):
     def do_additional_listen_example_params(self):
         return "--speedtest_period 900 --connecttest_period 5 --connecttest_url http://google.com"
 
-    def do_process_command(self, command:str, hostname: str, port: int, verbose: bool, args) -> bool:
+    def do_process_command(self, command:str, port: int, verbose: bool, args) -> bool:
         if command == 'listen' and (args.speedtest_period > 0 or args.connecttest_period > 0):
-            run_server(hostname, port, self.description, args.speedtest_period, args.connecttest_period, args.connecttest_url)
+            run_server(port, self.description, args.speedtest_period, args.connecttest_period, args.connecttest_url)
             return True
         elif args.command == 'register' and (args.speedtest_period > 0 or args.connecttest_period > 0):
             print("register " + self.packagename + " on port " + str(args.port) + " with speedtest_period " + str(args.speedtest_period) + "sec and connecttest_period " + str(args.connecttest_period) + "sec")
-            if len(hostname) > 0:
-                hostnameentry = "--hostname " + hostname
-            else:
-                hostnameentry = ""
-            unit = UNIT_TEMPLATE.substitute(packagename=self.packagename, entrypoint=self.entrypoint, hostnameentry=hostnameentry, port=port, verbose=verbose, speedtest_period=args.speedtest_period, connecttest_period=args.connecttest_period, connecttest_url=args.connecttest_url)
-            self.unit.register(hostname, port, unit)
+            unit = UNIT_TEMPLATE.substitute(packagename=self.packagename, entrypoint=self.entrypoint, port=port, verbose=verbose, speedtest_period=args.speedtest_period, connecttest_period=args.connecttest_period, connecttest_url=args.connecttest_url)
+            self.unit.register(port, unit)
             return True
         else:
             return False

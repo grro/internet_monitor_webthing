@@ -35,7 +35,7 @@ setup(
         'webthings', 'home automation', 'speedtest', 'internet', 'local', 'raspberry', 'pi'
     ],
     install_requires=[
-        'webthing',
+        'webthing==0.15.0',
         'speedtest-cli',
         'requests'
     ],
