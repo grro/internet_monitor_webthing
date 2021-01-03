@@ -121,8 +121,7 @@ class Unit:
                 if file.startswith(self.packagename) and file.endswith('.service'):
                     idx = file.rindex('_')
                     port = file[idx+1:file.index('.service')]
-                    host = bytearray.fromhex(file[file[:idx].rindex('_')+1:idx]).decode()
-                    services.append((file, host, port, self.is_active(file)))
+                    services.append((file, port, self.is_active(file)))
         except Exception as e:
             pass
         return services
