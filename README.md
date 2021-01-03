@@ -35,7 +35,7 @@ To run this software you may use Docker or [PIP](https://realpython.com/what-is-
 
 **Docker approach**
 ```
-sudo docker run -p 8433:8433 -e speedtest_period=900 -e connecttest_period=5 grro/internet-monitor:0.0.79
+sudo docker run -p 8433:8433 grro/internet-monitor:0.1.0
 ```
 
 **PIP approach**
