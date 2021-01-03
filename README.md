@@ -31,8 +31,14 @@ curl http://192.168.0.23:8433/1/properties
 }
 ```
 
-To run this software you may use [PIP](https://realpython.com/what-is-pip/) package manager such as shown below
+To run this software you may use Docker or [PIP](https://realpython.com/what-is-pip/) package manager such as shown below
 
+**Docker approach**
+```
+sudo docker run -p 8433:8433 -e speedtest_period=900 -e connecttest_period=5 grro/internet-monitor:0.0.79
+```
+
+**PIP approach**
 ```
 sudo pip install internet_monitor_webthing
 ```

@@ -1,6 +1,6 @@
 FROM python:3.9.1-alpine
 
-ENV port 8555
+ENV port 8433
 ENV speedtest_period 900
 ENV connecttest_period 5
 
