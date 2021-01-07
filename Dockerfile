@@ -10,7 +10,10 @@ LABEL org.label-schema.schema-version="1.0" \
       org.label-schema.url="https://github.com/grro/internet_monitor_webthing" \
       org.label-schema.docker.cmd="docker run -p 8433:8433 grro/internet-monitor"
 
-ADD . /tmp/
+ADD setup.py /tmp/.
+ADD README.md /tmp/.
+ADD internet_monitor_webthing /tmp/internet_monitor_webthing/.
+
 WORKDIR /tmp/
 RUN  python /tmp/setup.py install
 WORKDIR /

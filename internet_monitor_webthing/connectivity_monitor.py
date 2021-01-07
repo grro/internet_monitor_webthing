@@ -1,6 +1,6 @@
 from datetime import datetime
 from dataclasses import dataclass
-from typing import List, Dict
+from typing import List, Dict, Optional
 import logging
 import time
 import requests
@@ -44,6 +44,12 @@ class ConnectionLog:
                 pickle.dump(self.entries, file)
         except Exception as e:
             logging.error(e)
+
+    def newest(self) -> Optional[ConnectionInfo]:
+        if len(self.entries) > 0:
+            return self.entries[-1]
+        else:
+            return None
 
     def print_duration(self, duration: int):
         if duration > (60 * 60):
@@ -146,8 +152,8 @@ class ConnectionTester:
             return ConnectionInfo(datetime.now(), False, "", IpInfo.EMPTY_INFO)
 
     def __measure_periodically(self, measure_period_sec: int, test_uri: str, listener):
-        previous_connection_info = None
         while True:
+            previous_connection_info = self.connection_log.newest()
             try:
                 if previous_connection_info is None or not previous_connection_info.is_connected:
                     connected_info = self.measure(test_uri, max_cache_ttl=0)
@@ -156,7 +162,6 @@ class ConnectionTester:
                 if previous_connection_info is None or self.is_connect_state_changed(connected_info, previous_connection_info) or self.is_ip_address_state_changed(connected_info, previous_connection_info):
                     self.connection_log.append(connected_info)
                     listener(connected_info)
-                    previous_connection_info = connected_info
             except Exception as e:
                 logging.error(e)
             time.sleep(measure_period_sec)
