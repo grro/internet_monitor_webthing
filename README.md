@@ -35,7 +35,7 @@ To run this software you may use Docker or [PIP](https://realpython.com/what-is-
 
 **Docker approach**
 ```
-sudo docker run -p 8433:8433 grro/internet-monitor:0.1.1
+sudo docker run -p 8433:8433 grro/internet-monitor:0.1.2
 ```
 
 **PIP approach**
