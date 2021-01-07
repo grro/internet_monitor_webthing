@@ -15,6 +15,9 @@ class ConnectionInfo:
     ip_address: str
     ip_info: Dict[str, str]
 
+    def __str__(self):
+        return self.date.strftime("%Y-%m-%d %H:%M:%S") + " " + str(self.is_connected)
+
 
 class ConnectionLog:
 
@@ -29,8 +32,10 @@ class ConnectionLog:
         try:
             with open(self.filename, "rb") as file:
                 self.entries = pickle.load(file)
+                logging.info("log file " + self.filename + " read. " + str(len(self.entries)) +  " entries found")
         except Exception as e:
             self.entries = list()
+
 
     def append(self, connection_info : ConnectionInfo):
         if len(self.entries) > 500:
@@ -152,6 +157,9 @@ class ConnectionTester:
             return ConnectionInfo(datetime.now(), False, "", IpInfo.EMPTY_INFO)
 
     def __measure_periodically(self, measure_period_sec: int, test_uri: str, listener):
+        initial_log_entry = self.connection_log.newest()
+        logging.info("current state: " + str(self.connection_log.newest()))
+        listener(initial_log_entry)
         while True:
             previous_connection_info = self.connection_log.newest()
             try:

@@ -16,7 +16,7 @@ class InternetConnectivityMonitorWebthing(Thing):
             ['MultiLevelSensor'],
             description
         )
-        self.history = ConnectionLog()
+        self.connection_log = ConnectionLog()
         self.connecttest_period = connecttest_period
 
         self.internet_connected = Value(False)
@@ -131,11 +131,12 @@ class InternetConnectivityMonitorWebthing(Thing):
                      }))
 
         self.ioloop = tornado.ioloop.IOLoop.current()
-        self.tester = ConnectionTester(self.history)
+        self.tester = ConnectionTester(self.connection_log)
         self.tester.listen(self.__connection_state_updated, self.testperiod.get(), self.test_url.get())
 
     def __connection_state_updated(self, connection_info: ConnectionInfo):
-        self.ioloop.add_callback(self.__update_connected_props, connection_info)
+        if connection_info is not None:
+            self.ioloop.add_callback(self.__update_connected_props, connection_info)
 
     def __update_connected_props(self, connection_info: ConnectionInfo):
         self.internet_connected.notify_of_external_update(connection_info.is_connected)
@@ -146,4 +147,4 @@ class InternetConnectivityMonitorWebthing(Thing):
         self.longitude.notify_of_external_update(longitude)
         self.latitude.notify_of_external_update(latitude)
         self.location_uri.notify_of_external_update('https://www.google.com/maps/search/?api=1&query='+ latitude + ',' + longitude)
-        self.connection_history.notify_of_external_update(self.history.to_report())
+        self.connection_history.notify_of_external_update(self.connection_log.to_report())
