@@ -32,29 +32,16 @@ class InternetConnectivityMonitorWebthing(Thing):
                          'readOnly': True,
                      }))
 
-        self.test_url = Value(connecttest_url)
+        self.event_date = Value("")
         self.add_property(
             Property(self,
-                     'test_url',
-                     self.test_url,
+                     'time',
+                     self.event_date,
                      metadata={
-                         'title': 'Internet connection test url',
+                         'title': 'Updated time',
                          "type": "string",
-                         'description': 'The url to connect',
-                         'readOnly': True,
-                     }))
-
-        self.testperiod = Value(connecttest_period)
-        self.add_property(
-            Property(self,
-                     'test_period',
-                     self.testperiod,
-                     metadata={
-                         '@type': 'LevelProperty',
-                         'title': 'Internet connection test execution period in seconds',
-                         'type': 'number',
-                         'description': 'The Internet connection test execution period in seconds',
-                         'unit': 'sec',
+                         'unit': 'datetime',
+                         'description': 'The ISO 8601 date time of last state update',
                          'readOnly': True,
                      }))
 
@@ -118,6 +105,32 @@ class InternetConnectivityMonitorWebthing(Thing):
                          'readOnly': True,
                      }))
 
+        self.test_url = Value(connecttest_url)
+        self.add_property(
+            Property(self,
+                     'connection_test_url',
+                     self.test_url,
+                     metadata={
+                         'title': 'Internet connection test url',
+                         "type": "string",
+                         'description': 'The url to connect',
+                         'readOnly': True,
+                     }))
+
+        self.testperiod = Value(connecttest_period)
+        self.add_property(
+            Property(self,
+                     'connection_test_period',
+                     self.testperiod,
+                     metadata={
+                         '@type': 'LevelProperty',
+                         'title': 'Internet connection test execution period in seconds',
+                         'type': 'number',
+                         'description': 'The Internet connection test execution period in seconds',
+                         'unit': 'sec',
+                         'readOnly': True,
+                     }))
+
         self.connection_history = Value("")
         self.add_property(
             Property(self,
@@ -140,6 +153,7 @@ class InternetConnectivityMonitorWebthing(Thing):
 
     def __update_connected_props(self, connection_info: ConnectionInfo):
         self.internet_connected.notify_of_external_update(connection_info.is_connected)
+        self.event_date.notify_of_external_update(connection_info.date.isoformat())
         self.ip_address.notify_of_external_update(connection_info.ip_address)
         self.isp.notify_of_external_update(connection_info.ip_info['isp'])
         longitude = connection_info.ip_info['longitude']

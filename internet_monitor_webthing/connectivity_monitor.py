@@ -123,7 +123,7 @@ class IpInfo:
                 self.cached_invalidation_time = datetime.now()
                 logging.info('ip info cache invalidated')
             if ip not in self.cache.keys():
-                response = requests.get('https://tools.keycdn.com/geo.json?host=' + ip, timeout=60)
+                response = requests.get('https://tools.keycdn.com/geo.json?host=' + ip, timeout=60, verify=False)
                 if (response.status_code >= 200) and (response.status_code < 300):
                     data = response.json()
                     self.cache[ip] = { 'isp': data['data']['geo'].get('isp', ''),
@@ -160,22 +160,17 @@ class ConnectionTester:
         initial_log_entry = self.connection_log.newest()
         logging.info("current state: " + str(self.connection_log.newest()))
         listener(initial_log_entry)
+
         while True:
-            previous_connection_info = self.connection_log.newest()
+            previous_info = self.connection_log.newest()
             try:
-                if previous_connection_info is None or not previous_connection_info.is_connected:
-                    connected_info = self.measure(test_uri, max_cache_ttl=0)
+                if previous_info is None or not previous_info.is_connected:
+                    info = self.measure(test_uri, max_cache_ttl=0)
                 else:
-                    connected_info = self.measure(test_uri, max_cache_ttl=4 * 60)
-                if previous_connection_info is None or self.is_connect_state_changed(connected_info, previous_connection_info) or self.is_ip_address_state_changed(connected_info, previous_connection_info):
-                    self.connection_log.append(connected_info)
-                    listener(connected_info)
+                    info = self.measure(test_uri, max_cache_ttl=4 * 60)
+                if previous_info is None or (info.is_connected != previous_info.is_connected) or (info.ip_address != previous_info.ip_address):
+                    self.connection_log.append(info)
+                    listener(info)
             except Exception as e:
                 logging.error(e)
             time.sleep(measure_period_sec)
-
-    def is_connect_state_changed(self, current: ConnectionInfo, previous: ConnectionInfo):
-       return current.is_connected != previous.is_connected
-
-    def is_ip_address_state_changed(self, current: ConnectionInfo, previous: ConnectionInfo):
-        return current.ip_address != previous.ip_address
