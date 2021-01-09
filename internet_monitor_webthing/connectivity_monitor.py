@@ -123,7 +123,7 @@ class IpInfo:
                 self.cached_invalidation_time = datetime.now()
                 logging.info('ip info cache invalidated')
             if ip not in self.cache.keys():
-                response = requests.get('https://tools.keycdn.com/geo.json?host=' + ip, timeout=60, verify=False)
+                response = requests.get('https://tools.keycdn.com/geo.json?host=' + ip, timeout=60)
                 if (response.status_code >= 200) and (response.status_code < 300):
                     data = response.json()
                     self.cache[ip] = { 'isp': data['data']['geo'].get('isp', ''),
@@ -145,18 +145,31 @@ class ConnectionTester:
         self.ip_info = IpInfo()
 
     def listen(self, listener, measure_period_sec, test_uri: str = "http://google.com"):
-        threading.Thread(target=self.__measure_periodically, args=(measure_period_sec, test_uri, listener), daemon=True).start()
+        threading.Thread(target=self.measure_periodically, args=(measure_period_sec, test_uri, listener), daemon=True).start()
 
     def measure(self, test_uri, max_cache_ttl: int) -> ConnectionInfo:
-        try:
-            requests.get(test_uri, timeout=10) # test call
+        # first trial
+        connected = self.is_connected(test_uri, 5)
+        if not connected:
+            # second trial
+            logging.info("first connect call failed. try second one")
+            connected = self.is_connected(test_uri, 10)
+        if connected:
             ip_address = self.address_resolver.get_internet_address(max_cache_ttl)
             ip_info = self.ip_info.get_ip_info(ip_address)
             return ConnectionInfo(datetime.now(), True, ip_address, ip_info)
-        except:
+        else:
             return ConnectionInfo(datetime.now(), False, "", IpInfo.EMPTY_INFO)
 
-    def __measure_periodically(self, measure_period_sec: int, test_uri: str, listener):
+    def is_connected(self, test_uri, timeout: int) -> bool:
+        try:
+            requests.get(test_uri, timeout=timeout) # test call
+            return True
+        except Exception as e:
+            logging.error("connect call " + test_uri + " failed", e)
+            return False
+
+    def measure_periodically(self, measure_period_sec: int, test_uri: str, listener):
         initial_log_entry = self.connection_log.newest()
         logging.info("current state: " + str(self.connection_log.newest()))
         listener(initial_log_entry)
