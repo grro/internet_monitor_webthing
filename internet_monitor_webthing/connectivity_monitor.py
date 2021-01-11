@@ -91,10 +91,13 @@ class IpAddressResolver:
         self.cache_ip_address = ""
         self.cache_time = datetime.fromtimestamp(555)
 
-    def get_internet_address(self, max_cache_ttl: int = 0) -> str:
+    def clear_cache(self):
+        self.cache_time = datetime.fromtimestamp(555)
+
+    def get_internet_address(self) -> str:
         try:
             now = datetime.now()
-            if max_cache_ttl == 0 or (now - self.cache_time).seconds > max_cache_ttl:
+            if (now - self.cache_time).seconds > (9 * 60):
                 response = requests.get('http://whatismyip.akamai.com/', timeout=60)
                 if (response.status_code >= 200) and (response.status_code < 300):
                     self.cache_ip_address = response.text
@@ -147,18 +150,20 @@ class ConnectionTester:
     def listen(self, listener, measure_period_sec, test_uri: str = "http://google.com"):
         threading.Thread(target=self.measure_periodically, args=(measure_period_sec, test_uri, listener), daemon=True).start()
 
-    def measure(self, test_uri, max_cache_ttl: int) -> ConnectionInfo:
+    def measure(self, test_uri) -> ConnectionInfo:
         # first trial
         connected = self.is_connected(test_uri, 5)
         if not connected:
+            self.address_resolver.clear_cache()
             # second trial
             logging.info("first connect call failed. try second one")
             connected = self.is_connected(test_uri, 10)
         if connected:
-            ip_address = self.address_resolver.get_internet_address(max_cache_ttl)
+            ip_address = self.address_resolver.get_internet_address()
             ip_info = self.ip_info.get_ip_info(ip_address)
             return ConnectionInfo(datetime.now(), True, ip_address, ip_info)
         else:
+            self.address_resolver.clear_cache()
             return ConnectionInfo(datetime.now(), False, "", IpInfo.EMPTY_INFO)
 
     def is_connected(self, test_uri, timeout: int) -> bool:
@@ -179,9 +184,8 @@ class ConnectionTester:
             previous_info = self.connection_log.newest()
             try:
                 if previous_info is None or not previous_info.is_connected:
-                    info = self.measure(test_uri, max_cache_ttl=0)
-                else:
-                    info = self.measure(test_uri, max_cache_ttl=7 * 60)
+                    self.address_resolver.clear_cache()
+                info = self.measure(test_uri)
                 if previous_info is None or (info.is_connected != previous_info.is_connected) or (info.ip_address != previous_info.ip_address):
                     self.connection_log.append(info)
                     listener(info)
