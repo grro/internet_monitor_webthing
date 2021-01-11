@@ -175,6 +175,7 @@ class ConnectionTester:
         listener(initial_log_entry)
 
         while True:
+            sleep_time_sec = measure_period_sec
             previous_info = self.connection_log.newest()
             try:
                 if previous_info is None or not previous_info.is_connected:
@@ -184,6 +185,8 @@ class ConnectionTester:
                 if previous_info is None or (info.is_connected != previous_info.is_connected) or (info.ip_address != previous_info.ip_address):
                     self.connection_log.append(info)
                     listener(info)
+                if not info.is_connected:
+                    sleep_time_sec = 1.5
             except Exception as e:
                 logging.error(e)
-            time.sleep(measure_period_sec)
+            time.sleep(sleep_time_sec)

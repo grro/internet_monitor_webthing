@@ -2,7 +2,7 @@ FROM python:3.9.1-alpine
 
 ENV port 8433
 ENV speedtest_period 900
-ENV connecttest_period 5
+ENV connecttest_period 10
 
 LABEL org.label-schema.schema-version="1.0" \
       org.label-schema.name="InternetspeedAndConnectivityMonitor" \
