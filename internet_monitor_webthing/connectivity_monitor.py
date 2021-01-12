@@ -89,19 +89,33 @@ class IpAddressResolver:
 
     def __init__(self):
         self.cache_ip_address = ""
-        self.cache_time = datetime.fromtimestamp(555)
+        self.cache_reset_time = datetime.now()
+        self.entry_cached_time = datetime.fromtimestamp(555)
 
     def clear_cache(self):
-        self.cache_time = datetime.fromtimestamp(555)
+        self.cache_reset_time = datetime.now()
+        self.entry_cached_time = datetime.fromtimestamp(555)
+
+    def get_max_cache_time_sec(self):
+        duration_since_last_reset = (datetime.now() - self.cache_reset_time).seconds + 1
+        if duration_since_last_reset < 5 * 60:
+            return 10
+        elif duration_since_last_reset < 15 * 60:
+            return 30
+        elif duration_since_last_reset < 60 * 60:
+            return 60
+        else:
+            return 500  # ~8 min
 
     def get_internet_address(self) -> str:
         try:
             now = datetime.now()
-            if (now - self.cache_time).seconds > (9 * 60):
+            cache_entry_age = now - self.entry_cached_time
+            if cache_entry_age.seconds > self.get_max_cache_time_sec():
                 response = requests.get('http://whatismyip.akamai.com/', timeout=60)
                 if (response.status_code >= 200) and (response.status_code < 300):
                     self.cache_ip_address = response.text
-                    self.cache_time = now
+                    self.entry_cached_time = now
                     logging.info('ip address resolved ' + self.cache_ip_address)
             return self.cache_ip_address
         except Exception as e:
