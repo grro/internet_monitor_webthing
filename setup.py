@@ -37,6 +37,7 @@ setup(
     install_requires=[
         'webthing==0.15.0',
         'speedtest-cli',
+        'ipwhois',
         'requests'
     ],
     classifiers=[

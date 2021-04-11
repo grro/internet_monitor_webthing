@@ -57,51 +57,15 @@ class InternetConnectivityMonitorWebthing(Thing):
                          'readOnly': True,
                      }))
 
-        self.isp = Value("")
+        self.asn = Value("")
         self.add_property(
             Property(self,
-                     'isp',
-                     self.isp,
+                     'asn',
+                     self.asn,
                      metadata={
                          'title': 'Internet service provider',
                          'type': 'string',
                          'description': 'The name of the internet service provider providing the public WAN IP address ',
-                         'readOnly': True,
-                     }))
-
-        self.latitude = Value("")
-        self.add_property(
-            Property(self,
-                     'latitude',
-                     self.latitude,
-                     metadata={
-                         'title': 'latitude',
-                         'type': 'string',
-                         'description': 'The resolve latitude regarding the ip address',
-                         'readOnly': True,
-                     }))
-
-        self.longitude = Value("")
-        self.add_property(
-            Property(self,
-                     'longitude',
-                     self.longitude,
-                     metadata={
-                         'title': 'longitude',
-                         'type': 'string',
-                         'description': 'The resolve longitude regarding the ip address',
-                         'readOnly': True,
-                     }))
-
-        self.location_uri = Value("")
-        self.add_property(
-            Property(self,
-                     'location_uri',
-                     self.location_uri,
-                     metadata={
-                         'title': 'location_uri',
-                         'type': 'string',
-                         'description': 'The resolve location regarding the ip address',
                          'readOnly': True,
                      }))
 
@@ -155,10 +119,5 @@ class InternetConnectivityMonitorWebthing(Thing):
         self.internet_connected.notify_of_external_update(connection_info.is_connected)
         self.event_date.notify_of_external_update(connection_info.date.isoformat())
         self.ip_address.notify_of_external_update(connection_info.ip_address)
-        self.isp.notify_of_external_update(connection_info.ip_info['isp'])
-        longitude = connection_info.ip_info['longitude']
-        latitude = connection_info.ip_info['latitude']
-        self.longitude.notify_of_external_update(longitude)
-        self.latitude.notify_of_external_update(latitude)
-        self.location_uri.notify_of_external_update('https://www.google.com/maps/search/?api=1&query='+ latitude + ',' + longitude)
+        self.asn.notify_of_external_update(connection_info.ip_info['asn'][:30])
         self.connection_history.notify_of_external_update(self.connection_log.to_report())

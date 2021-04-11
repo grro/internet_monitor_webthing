@@ -1,6 +1,7 @@
 from datetime import datetime
 from dataclasses import dataclass
 from typing import List, Dict, Optional
+import ipwhois
 import logging
 import time
 import requests
@@ -78,7 +79,7 @@ class ConnectionLog:
                         detail = "reconnected after " + self.print_duration(elapsed_sec)
                     elif len(entry.ip_address) > 0 and len(previous_entry.ip_address) > 0 and entry.ip_address != previous_entry.ip_address:
                         detail = "ip address updated"
-                report.append(entry.date.strftime("%Y-%m-%d %H:%M:%S") + ", " + status + ", " + entry.ip_address + ", " + entry.ip_info['isp'] + ", " + detail)
+                report.append(entry.date.strftime("%Y-%m-%d %H:%M:%S") + ", " + status + ", " + entry.ip_address + ", " + entry.ip_info['asn'] + ", " + detail)
                 previous_entry = entry
             except Exception as e:
                 print(e)
@@ -114,7 +115,7 @@ class IpAddressResolver:
             if cache_entry_age.seconds > self.get_max_cache_time_sec():
                 response = requests.get('http://whatismyip.akamai.com/', timeout=60)
                 if (response.status_code >= 200) and (response.status_code < 300):
-                    self.cache_ip_address = response.text
+                    self.cache_ip_address = response.text[:20]
                     self.entry_cached_time = now
                     logging.info('ip address resolved ' + self.cache_ip_address)
             return self.cache_ip_address
@@ -124,10 +125,7 @@ class IpAddressResolver:
 
 class IpInfo:
 
-    EMPTY_INFO = { 'isp': '',
-                   'city' : '',
-                   'latitude' : '',
-                   'longitude' : '' }
+    EMPTY_INFO = { 'asn': '' }
 
     def __init__(self):
         self.cache= dict()
@@ -140,15 +138,11 @@ class IpInfo:
                 self.cached_invalidation_time = datetime.now()
                 logging.info('ip info cache invalidated')
             if ip not in self.cache.keys():
-                response = requests.get('https://tools.keycdn.com/geo.json?host=' + ip, timeout=60)
-                if (response.status_code >= 200) and (response.status_code < 300):
-                    data = response.json()
-                    self.cache[ip] = { 'isp': data['data']['geo'].get('isp', ''),
-                                       'city' : data['data']['geo'].get('city', ''),
-                                       'latitude' : str(data['data']['geo'].get('latitude', '')),
-                                       'longitude' : str(data['data']['geo'].get('longitude', '')),
-                                       }
-                    logging.info('ip info fetched ' + ip + ":" + str(self.cache[ip]))
+                obj = ipwhois.IPWhois(ip)
+                rdap = obj.lookup_rdap()
+                asn = str(rdap['asn_description']).replace(",", " ")
+                self.cache[ip] = { 'asn': asn }
+                logging.info('ip info fetched ' + ip + ":" + str(self.cache[ip]))
             return self.cache.get(ip, IpInfo.EMPTY_INFO)
         except Exception as e:
             return IpInfo.EMPTY_INFO
