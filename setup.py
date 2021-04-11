@@ -36,7 +36,7 @@ setup(
     ],
     install_requires=[
         'webthing==0.15.0',
-        'speedtest-cli',
+        'speedtest-cli=2.1.3',
         'ipwhois',
         'requests'
     ],
