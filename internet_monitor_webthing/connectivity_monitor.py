@@ -124,6 +124,7 @@ class IpAddressResolver:
                             break
                     except Exception as e:
                         logging.info('error occurred calling  ' + uri + ' ' + str(e))
+                        time.sleep(2)
             return self.cache_ip_address
         except Exception as e:
             logging.info('error fetching ip address ' + str(e))
