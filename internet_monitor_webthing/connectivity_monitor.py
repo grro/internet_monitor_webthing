@@ -109,17 +109,24 @@ class IpAddressResolver:
             return 500  # ~8 min
 
     def get_internet_address(self) -> str:
+        uri = 'http://whatismyip.akamai.com/'
         try:
             now = datetime.now()
             cache_entry_age = now - self.entry_cached_time
             if cache_entry_age.seconds > self.get_max_cache_time_sec():
-                response = requests.get('http://whatismyip.akamai.com/', timeout=60)
-                if (response.status_code >= 200) and (response.status_code < 300):
-                    self.cache_ip_address = response.text[:20]
-                    self.entry_cached_time = now
-                    logging.info('ip address resolved ' + self.cache_ip_address)
+                for i in range(0, 3):
+                    try:
+                        response = requests.get('http://whatismyip.akamai.com/', timeout=60)
+                        if (response.status_code >= 200) and (response.status_code < 300):
+                            self.cache_ip_address = response.text[:20]
+                            self.entry_cached_time = now
+                            logging.info('ip address resolved ' + self.cache_ip_address)
+                            break
+                    except Exception as e:
+                        logging.info('error occurred calling  ' + uri + ' ' + str(e))
             return self.cache_ip_address
         except Exception as e:
+            logging.info('error fetching ip address ' + str(e))
             return ""
 
 
