@@ -39,7 +39,7 @@ class ConnectionLog:
 
 
     def append(self, connection_info : ConnectionInfo):
-        if len(self.entries) > 500:
+        if len(self.entries) > 200:
             del self.entries[0]
         self.entries.append(connection_info)
         self.__store()

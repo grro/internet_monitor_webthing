@@ -95,18 +95,6 @@ class InternetConnectivityMonitorWebthing(Thing):
                          'readOnly': True,
                      }))
 
-        self.connection_history = Value("")
-        self.add_property(
-            Property(self,
-                     'connection_history',
-                     self.connection_history,
-                     metadata={
-                         'title': 'Connection log',
-                         'type': 'array',
-                         'description': 'The connection log',
-                         'readOnly': True,
-                     }))
-
         self.ioloop = tornado.ioloop.IOLoop.current()
         self.tester = ConnectionTester(self.connection_log)
         self.tester.listen(self.__connection_state_updated, self.testperiod.get(), self.test_url.get())
@@ -119,5 +107,4 @@ class InternetConnectivityMonitorWebthing(Thing):
         self.internet_connected.notify_of_external_update(connection_info.is_connected)
         self.event_date.notify_of_external_update(connection_info.date.isoformat())
         self.ip_address.notify_of_external_update(connection_info.ip_address)
-        self.asn.notify_of_external_update(connection_info.ip_info['asn'][:30])
-        self.connection_history.notify_of_external_update(self.connection_log.to_report())
+        self.asn.notify_of_external_update(connection_info.ip_info['asn'][:40])
